@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    FirebaseFirestore firestore;
+//    FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,25 +33,25 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        firestore = FirebaseFirestore.getInstance();
-
-        Map<String, Object> users = new HashMap<>();
-        users.put("firstname", "John");
-        users.put("lastname", "Doe");
-        users.put("email", "john.mclean@examplepetstore.com");
-        users.put("password", "password");
-
-        firestore.collection("users").add(users).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Toast.makeText(getApplicationContext(), "User added", Toast.LENGTH_SHORT).show();
-                }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "User not added", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        firestore = FirebaseFirestore.getInstance();
+//
+//        Map<String, Object> users = new HashMap<>();
+//        users.put("firstname", "John");
+//        users.put("lastname", "Doe");
+//        users.put("email", "john.mclean@examplepetstore.com");
+//        users.put("password", "password");
+//
+//        firestore.collection("users").add(users).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//            @Override
+//            public void onSuccess(DocumentReference documentReference) {
+//                Toast.makeText(getApplicationContext(), "User added", Toast.LENGTH_SHORT).show();
+//                }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(getApplicationContext(), "User not added", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
     }
 }
