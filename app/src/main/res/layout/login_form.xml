@@ -100,6 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="@string/login_form"
+                android:textColor="@color/white"
                 app:backgroundTint="@drawable/button_bg_color"
                 app:cornerRadius="32dp" />
 
@@ -113,6 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="@string/create_account"
+                android:textColor="@color/white"
                 app:backgroundTint="@drawable/button_bg_color"
                 app:cornerRadius="32dp" />
 

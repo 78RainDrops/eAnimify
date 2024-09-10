@@ -152,6 +152,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="@string/Submit"
+                android:textColor="@color/white"
                 app:cornerRadius="32dp"
                 app:backgroundTint="@drawable/button_bg_color" />
 
