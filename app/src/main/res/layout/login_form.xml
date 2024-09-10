@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Account.LoginActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:cardCornerRadius="28dp"
+        android:layout_marginBottom="-20dp"
+
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="28dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_form"
+                android:textColor="@color/login_form_background"
+                android:textSize="32sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pls_login"
+                android:alpha="0.7"/>
+            <!--      Email Address      -->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/email_input"
+                android:alpha="0.7"
+                android:textStyle="bold"/>
+
+            <!--     Password       -->
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="Enter email address"
+                android:drawableEnd="@drawable/done_icon"
+                android:inputType="textEmailAddress"
+                tools:ignore="LabelFor" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/password_input"
+                android:alpha="0.7"
+                android:textStyle="bold"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="Enter Password"
+                android:inputType="textPassword"
+                android:drawableEnd="@drawable/password_icon"
+                tools:ignore="LabelFor" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remember_me"
+                    android:layout_centerVertical="true"
+                    android:alpha="0.7"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/forgot_password"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:alpha="0.7"
+                    tools:ignore="RelativeOverlap" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/login_form"
+                app:backgroundTint="@drawable/button_bg_color"
+                app:cornerRadius="32dp" />
+
+            <!--            <View-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="20dp" />-->
+            <View style="@style/Divider"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/create_account_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/create_account"
+                app:backgroundTint="@drawable/button_bg_color"
+                app:cornerRadius="32dp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">eAnimify</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--  Login form text  -->
+    <string name="login_form">Login</string>
+    <string name="pls_login">Please login to continue</string>
+    <string name="email_input">Email Address</string>
+    <string name="password_input">Password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="remember_me">Remember me</string>
+
+    <!--  Create Account form text  -->
+    <string name="create_account">Create New Account</string>
+    <string name="pls_register">Please register to continue</string>
+    <string name="firstName">First name</string>
+    <string name="lastName">Last name</string>
+    <string name="Submit">Submit</string>
+    <string name="Alr_acc">Already have an Account?</string>
+
+</resources>
