@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "721348636523",
+    "project_id": "eanimifyapplication-32745",
+    "storage_bucket": "eanimifyapplication-32745.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721348636523:android:f58c763259c48a72b6a62e",
+        "android_client_info": {
+          "package_name": "com.rcm.eanimify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFijkUO8bC96eB1-V3AlsmqiTf0snqj9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
