@@ -46,6 +46,7 @@
 
             <!--     Password       -->
             <EditText
+                android:id="@+id/login_em"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="Enter email address"
@@ -62,12 +63,14 @@
                 android:text="@string/password_input"
                 android:alpha="0.7"
                 android:textStyle="bold"/>
+
             <EditText
+                android:id="@+id/login_pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="Enter Password"
-                android:inputType="textPassword"
                 android:drawableEnd="@drawable/password_icon"
+                android:inputType="textPassword"
                 tools:ignore="LabelFor" />
 
             <RelativeLayout
@@ -92,11 +95,22 @@
 
             </RelativeLayout>
 
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"/>
+            <ProgressBar
+                android:id="@+id/progressBard"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="10dp"/>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/login_btn"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="@string/login_form"

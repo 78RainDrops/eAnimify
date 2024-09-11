@@ -18,5 +18,6 @@
     <string name="lastName">Last name</string>
     <string name="Submit">Submit</string>
     <string name="Alr_acc">Already have an Account?</string>
+    <string name="sign_out">Logout</string>
 
 </resources>
