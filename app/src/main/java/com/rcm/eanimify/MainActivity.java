@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.rcm.eanimify.Account.LoginActivity;
 
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     Button sign_out;
     TextView user_details;
     FirebaseUser user;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,29 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
         else{
-            user_details.setText(user.getEmail());
+            db.collection("users")
+                    .document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                String firstName = documentSnapshot.getString("firstName");
+                                user_details.setText(firstName);
+                            } else {
+                                // Handle case where user data doesn't exist
+                                user_details.setText(user.getEmail()); // Fallback to email
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "Error fetching user data", Toast.LENGTH_SHORT).show();
+                            user_details.setText(user.getEmail()); // Fallback to email
+                        }
+                    });
+//            user_details.setText(user.getEmail());
         }
 
         sign_out.setOnClickListener(new View.OnClickListener() {

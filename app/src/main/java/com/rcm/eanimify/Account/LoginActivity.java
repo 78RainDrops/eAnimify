@@ -16,10 +16,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.rcm.eanimify.GlobalVariable;
 import com.rcm.eanimify.MainActivity;
 import com.rcm.eanimify.R;
@@ -32,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
 
 //     Account login Variables
     EditText login_email, login_password;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public void onStart() {
@@ -84,17 +89,19 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 //        registration
+//        set up variables
          reg_first_name = findViewById(R.id.firstname_TextField);
          reg_last_name = findViewById(R.id.lastname_TextField);
          reg_email = findViewById(R.id.email_TextField);
          reg_password = findViewById(R.id.password_TextField);
          GlobalVariable.submit_btn = findViewById(R.id.submit_btn);
          progressBar = findViewById(R.id.progressBar);
-
+//create an onlclick function for the submit button
          GlobalVariable.submit_btn.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 progressBar.setVisibility(View.VISIBLE);
+                 progressBar.setVisibility(View.VISIBLE); //set the visibility of the progress bar to visible
+//                 create a user instance, and add it to the database
                  String reg_firstname, reg_lastname, reg__email, reg__password;
                  reg_firstname = String.valueOf(reg_first_name.getText().toString());
                  reg_lastname = String.valueOf(reg_last_name.getText().toString());
@@ -117,9 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                      Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
                      return;
                  }
-//                 else{
-//                     Toast.makeText(LoginActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-//                 }
                  GlobalVariable.mAuth.createUserWithEmailAndPassword(reg__email, reg__password)
                          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                              @Override
@@ -127,11 +131,33 @@ public class LoginActivity extends AppCompatActivity {
                                  progressBar.setVisibility(View.GONE);
                                  if (task.isSuccessful()) {
                                      // Sign in success, update UI with the signed-in user's information
-                                     Toast.makeText(LoginActivity.this, "Account Created.",
-                                             Toast.LENGTH_SHORT).show();
-                                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                     startActivity(intent);
-                                     finish();
+                                     FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                     if (user != null) {
+                                         // Create a new user instance
+                                         User newUser = new User(reg_firstname, reg_lastname, reg__email);
+
+                                         // Add a new document with a generated ID
+                                         db.collection("users")
+                                                 .document(user.getUid()) // Use user's UID as document ID
+                                                 .set(newUser)
+                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                     @Override
+                                                     public void onSuccess(Void aVoid) {
+                                                         Toast.makeText(LoginActivity.this, "Account Created and data saved.",
+                                                                 Toast.LENGTH_SHORT).show();
+                                                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                                         startActivity(intent);
+                                                         finish();
+                                                     }
+                                                 })
+                                                 .addOnFailureListener(new OnFailureListener() {
+                                                     @Override
+                                                     public void onFailure(@NonNull Exception e) {
+                                                         Toast.makeText(LoginActivity.this, "Error saving user data.",
+                                                                 Toast.LENGTH_SHORT).show();
+                                                     }
+                                                 });
+                                     }
                                  } else {
                                      // If sign in fails, display a message to the user.
                                      Toast.makeText(LoginActivity.this, "Authentication failed.",

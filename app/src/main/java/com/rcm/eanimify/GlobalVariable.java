@@ -2,6 +2,7 @@ package com.rcm.eanimify;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GlobalVariable {
 
