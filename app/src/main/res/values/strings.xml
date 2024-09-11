@@ -19,5 +19,12 @@
     <string name="Submit">Submit</string>
     <string name="Alr_acc">Already have an Account?</string>
     <string name="sign_out">Logout</string>
+<!--  Strong password text  -->
+    <string name="password_is_too_short">Password is too short</string>
+    <string name="password_must_contain_at_least_one_uppercase_letter">Password must contain at least one uppercase letter</string>
+    <string name="password_must_contain_at_least_one_lowercase_letter">Password must contain at least one lowercase letter</string>
+    <string name="password_must_contain_at_least_one_digit">Password must contain at least one digit</string>
+    <string name="password_must_contain_at_least_one_special_symbol">Password must contain at least one special symbol</string>
+    <string name="strong_password">Strong password</string>
 
 </resources>

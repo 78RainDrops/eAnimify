@@ -2,10 +2,13 @@ package com.rcm.eanimify.Account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
 //    Account creation Variables
      EditText reg_first_name, reg_last_name, reg_email, reg_password;
      ProgressBar progressBar;
+     TextView strong_password;
 
 //     Account login Variables
     EditText login_email, login_password;
@@ -96,6 +100,30 @@ public class LoginActivity extends AppCompatActivity {
          reg_password = findViewById(R.id.password_TextField);
          GlobalVariable.submit_btn = findViewById(R.id.submit_btn);
          progressBar = findViewById(R.id.progressBar);
+         strong_password = findViewById(R.id.strong_password);
+
+//      Strong password checker
+        reg_password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                checkPasswordStrength(charSequence.toString());
+                strong_password.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkPasswordStrength(editable.toString());
+                strong_password.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
 //create an onlclick function for the submit button
          GlobalVariable.submit_btn.setOnClickListener(new View.OnClickListener() {
              @Override
@@ -135,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                                      if (user != null) {
                                          // Create a new user instance
                                          User newUser = new User(reg_firstname, reg_lastname, reg__email);
-
+                                         newUser.isVerified = false;//this will set the user as not verified
                                          // Add a new document with a generated ID
                                          db.collection("users")
                                                  .document(user.getUid()) // Use user's UID as document ID
@@ -143,8 +171,9 @@ public class LoginActivity extends AppCompatActivity {
                                                  .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                      @Override
                                                      public void onSuccess(Void aVoid) {
-                                                         Toast.makeText(LoginActivity.this, "Account Created and data saved.",
-                                                                 Toast.LENGTH_SHORT).show();
+//                                                         If the account creation is successful it will create the account
+//                                                         Toast.makeText(LoginActivity.this, "Account Created and data saved.",
+//                                                                 Toast.LENGTH_SHORT).show();
                                                          Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                                          startActivity(intent);
                                                          finish();
@@ -153,10 +182,31 @@ public class LoginActivity extends AppCompatActivity {
                                                  .addOnFailureListener(new OnFailureListener() {
                                                      @Override
                                                      public void onFailure(@NonNull Exception e) {
+//                                                         if the account creation is not successful it will show an error message
                                                          Toast.makeText(LoginActivity.this, "Error saving user data.",
                                                                  Toast.LENGTH_SHORT).show();
                                                      }
                                                  });
+                                     }
+                                     if (user != null) {//if the user is not null or empty it will send a verification email
+                                         user.sendEmailVerification()
+                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                     @Override
+                                                     public void onSuccess(Void aVoid) {
+                                                         // Email sent successfully
+                                                         Toast.makeText(LoginActivity.this, "Verification email sent.", Toast.LENGTH_SHORT).show();
+                                                     }
+                                                 })
+                                                 .addOnFailureListener(new OnFailureListener() {
+                                                     @Override
+                                                     public void onFailure(@NonNull Exception e) {
+                                                         // Handle errors
+                                                         Toast.makeText(LoginActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                                     }
+                                                 });
+                                     } else {
+                                         // Handle the case where user is null (e.g., show an error message)
+                                         Toast.makeText(LoginActivity.this, "User not found.", Toast.LENGTH_SHORT).show();
                                      }
                                  } else {
                                      // If sign in fails, display a message to the user.
@@ -213,5 +263,22 @@ public class LoginActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+//Check password strength method
+    private void checkPasswordStrength(String password) {
+        TextView feedbackText = findViewById(R.id.strong_password);
+        if (password.length() < 8) {
+            feedbackText.setText(R.string.password_is_too_short);
+        } else if (!password.matches(".*[A-Z].*")) {
+            feedbackText.setText(R.string.password_must_contain_at_least_one_uppercase_letter);
+        } else if (!password.matches(".*[a-z].*")) {
+            feedbackText.setText(R.string.password_must_contain_at_least_one_lowercase_letter);
+        } else if (!password.matches(".*\\d.*")) {
+            feedbackText.setText(R.string.password_must_contain_at_least_one_digit);
+        } else if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            feedbackText.setText(R.string.password_must_contain_at_least_one_special_symbol);
+        } else {
+            feedbackText.setText(R.string.strong_password);
+        }
     }
 }

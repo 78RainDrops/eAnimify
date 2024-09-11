@@ -78,6 +78,26 @@ public class MainActivity extends AppCompatActivity {
 //            user_details.setText(user.getEmail());
         }
 
+        if (user == null) {
+            // User is not logged in, redirect to LoginActivity
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else {
+            if (user.isEmailVerified()) {
+                // Email is verified, proceed as usual
+                Toast.makeText(MainActivity.this, "Please verify your email address.", Toast.LENGTH_SHORT).show();
+            } else {
+                // Email is not verified, show a message or redirect
+                Toast.makeText(MainActivity.this, "Please verify your email address.", Toast.LENGTH_SHORT).show();
+                // You can also choose to sign out the user and redirect to LoginActivity
+                 FirebaseAuth.getInstance().signOut();
+                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                 startActivity(intent);
+                 finish();
+            }
+        }
+
         sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){

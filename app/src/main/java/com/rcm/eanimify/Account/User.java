@@ -4,6 +4,7 @@ public class User {
     public String firstName;
     public String lastName;
     public String email;
+    public boolean isVerified = false; // Add this line
 
     public User() {} // Empty constructor for Firestore
 

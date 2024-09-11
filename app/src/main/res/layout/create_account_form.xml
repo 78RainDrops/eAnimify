@@ -143,6 +143,16 @@
 <!--                    tools:ignore="RelativeOverlap" />-->
 
 <!--            </RelativeLayout>-->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:id="@+id/strong_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textColor="@color/red"/>
 
             <View
                 android:layout_width="wrap_content"
