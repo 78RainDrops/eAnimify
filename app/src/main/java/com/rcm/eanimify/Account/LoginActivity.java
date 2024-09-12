@@ -1,11 +1,17 @@
 package com.rcm.eanimify.Account;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -40,6 +46,12 @@ public class LoginActivity extends AppCompatActivity {
 //     Account login Variables
     EditText login_email, login_password;
 
+//    remember me variable
+    CheckBox rememberMeCheckBox;
+    EditText emailEditText;
+    EditText passwordEditText;
+    SharedPreferences preferences;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -51,6 +63,38 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
+        }
+        SharedPreferences preferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        String savedEmail = preferences.getString("email", "");
+        String savedPassword = preferences.getString("password", "");
+        if (!savedEmail.isEmpty() && !savedPassword.isEmpty()) {
+            emailEditText.setText(savedEmail);
+            passwordEditText.setText(savedPassword);
+            GlobalVariable.mAuth.signInWithEmailAndPassword(savedEmail, savedPassword)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            progressBar.setVisibility(View.GONE);
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                if (user != null && user.isEmailVerified()) {
+                                    // Email is verified, proceed to MainActivity
+                                    Toast.makeText(LoginActivity.this, "Login Successful.", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    // Email is not verified, show a message
+                                    Toast.makeText(LoginActivity.this, "Please verify your email address.", Toast.LENGTH_SHORT).show();
+                                    // You can also choose to sign out the user here
+                                    // FirebaseAuth.getInstance().signOut();
+                                }
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
         }
     }
 
@@ -223,6 +267,9 @@ public class LoginActivity extends AppCompatActivity {
         GlobalVariable.submit_btn = findViewById(R.id.login_btn);
         progressBar = findViewById(R.id.progressBar);
 
+        rememberMeCheckBox = findViewById(R.id.remember_me);
+//        preferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+
         GlobalVariable.submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,24 +293,83 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(LoginActivity.this, "Login Successful.",
-                                            Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                    if (user != null && user.isEmailVerified()) {
+                                        if (rememberMeCheckBox.isChecked()) {
+                                            SharedPreferences preferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = preferences.edit();
+                                            editor.putString("email", log_email);
+                                            editor.putString("password", log_password);
+                                            editor.apply();
+                                        }
+                                        // Email is verified, proceed to MainActivity
+                                        Toast.makeText(LoginActivity.this, "Login Successful.", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        // Email is not verified, show a message
+                                        Toast.makeText(LoginActivity.this, "Please verify your email address.", Toast.LENGTH_SHORT).show();
+                                        // You can also choose to sign out the user here
+                                        // FirebaseAuth.getInstance().signOut();
+                                    }
                                 } else {
                                     // If sign in fails, display a message to the user.
-
-                                    Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-
+                                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
+
             }
         });
+
+//Forgot password
+        TextView forgotPasswordTextView = findViewById(R.id.forgot_password);
+        forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText emailEditText = findViewById(R.id.login_em); // Assuming this is your email EditText
+                String email = emailEditText.getText().toString();
+                sendPasswordResetEmail(email);
+            }
+        });
+
+//        Show password
+        EditText passwordEditText = findViewById(R.id.login_pass);
+        Drawable passwordIcon = passwordEditText.getCompoundDrawables()[2];
+
+        passwordEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (passwordEditText.getRight() - passwordEditText.getCompoundDrawables()[2].getBounds().width())) {
+                        togglePasswordVisibility(passwordEditText);
+                        passwordEditText.performClick(); // Call performClick
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        passwordEditText.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+                    togglePasswordVisibility(passwordEditText);
+                    return true;
+                }
+                return super.performAccessibilityAction(host, action, args);
+            }
+        });
+
     }
+
+//    @Override
+//    public boolean performClick() {
+//        super.performClick();
+//        return true;
+//    }
+
 //Check password strength method
     private void checkPasswordStrength(String password) {
         TextView feedbackText = findViewById(R.id.strong_password);
@@ -280,5 +386,32 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             feedbackText.setText(R.string.strong_password);
         }
+    }
+
+//    Send reset password email
+private void sendPasswordResetEmail(String email) {
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, "Password reset email sent!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Failed to send reset email!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+}
+//show passowrd method
+    private void togglePasswordVisibility(EditText editText) {
+        if (editText.getInputType() == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            // Change icon to closed eye (if needed)
+        } else {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            // Change icon to open eye (if needed)
+        }
+        editText.setSelection(editText.getText().length()); // Set cursor to the end
     }
 }
