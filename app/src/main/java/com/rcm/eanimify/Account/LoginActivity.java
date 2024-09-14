@@ -336,6 +336,7 @@ public class LoginActivity extends AppCompatActivity {
 
 //        Show password
         EditText passwordEditText = findViewById(R.id.login_pass);
+        EditText regPasswordEditText = findViewById(R.id.password_TextField);
         Drawable passwordIcon = passwordEditText.getCompoundDrawables()[2];
 
         passwordEditText.setOnTouchListener(new View.OnTouchListener() {
@@ -344,18 +345,44 @@ public class LoginActivity extends AppCompatActivity {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= (passwordEditText.getRight() - passwordEditText.getCompoundDrawables()[2].getBounds().width())) {
                         togglePasswordVisibility(passwordEditText);
-                        passwordEditText.performClick(); // Call performClick
+                        passwordEditText.performClick(); // Add this line
                         return true;
                     }
                 }
                 return false;
             }
         });
+
         passwordEditText.setAccessibilityDelegate(new View.AccessibilityDelegate() {
             @Override
             public boolean performAccessibilityAction(View host, int action, Bundle args) {
                 if (action == AccessibilityNodeInfo.ACTION_CLICK) {
                     togglePasswordVisibility(passwordEditText);
+                    return true;
+                }
+                return super.performAccessibilityAction(host, action, args);
+            }
+        });
+
+//      registration
+        regPasswordEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (regPasswordEditText.getRight() - regPasswordEditText.getCompoundDrawables()[2].getBounds().width())) {
+                        togglePasswordVisibility(regPasswordEditText);
+                        regPasswordEditText.performClick();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        regPasswordEditText.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+                    togglePasswordVisibility(regPasswordEditText);
                     return true;
                 }
                 return super.performAccessibilityAction(host, action, args);
@@ -403,15 +430,17 @@ private void sendPasswordResetEmail(String email) {
                 }
             });
 }
-//show passowrd method
-    private void togglePasswordVisibility(EditText editText) {
-        if (editText.getInputType() == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            // Change icon to closed eye (if needed)
-        } else {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            // Change icon to open eye (if needed)
-        }
-        editText.setSelection(editText.getText().length()); // Set cursor to the end
+//show passoword method
+private void togglePasswordVisibility(EditText editText) {
+    if (editText.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        // Change icon to open eye (if needed)
+        editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.password_show_icon, 0);
+    } else {
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        // Change icon to closed eye (if needed)
+        editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.password_icon, 0);
     }
+    editText.setSelection(editText.getText().length());
+}
 }
