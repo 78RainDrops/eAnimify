@@ -11,6 +11,8 @@ constraintlayout = "2.1.4"
 composeThemeAdapter = "1.2.1"
 firebaseFirestore = "25.1.0"
 firebaseAuth = "23.0.0"
+navigationRuntime = "2.8.0"
+navigationUi = "2.8.0"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -24,6 +26,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 compose-theme-adapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeThemeAdapter" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "navigationRuntime" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

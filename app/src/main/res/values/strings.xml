@@ -26,5 +26,12 @@
     <string name="password_must_contain_at_least_one_digit">Password must contain at least one digit</string>
     <string name="password_must_contain_at_least_one_special_symbol">Password must contain at least one special symbol</string>
     <string name="strong_password">Strong password</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_title">User\'s Fullname</string>
+    <string name="nav_header_subtitle">user.email@eanimify.com</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Animal Library</string>
 
 </resources>

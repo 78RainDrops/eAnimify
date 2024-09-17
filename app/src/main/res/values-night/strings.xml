@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_title">User\'s Fullname</string>
+    <string name="nav_header_subtitle">user.email@eanimify.com</string>
+</resources>
