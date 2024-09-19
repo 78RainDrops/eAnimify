@@ -13,4 +13,8 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/black</item>
     </style>
+
+    <style name="Theme.Sample.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Sample.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
