@@ -311,7 +311,7 @@ public class LoginActivity extends AppCompatActivity {
                                         // Email is not verified, show a message
                                         Toast.makeText(LoginActivity.this, "Please verify your email address.", Toast.LENGTH_SHORT).show();
                                         // You can also choose to sign out the user here
-                                        // FirebaseAuth.getInstance().signOut();
+//                                         FirebaseAuth.getInstance().signOut();
                                     }
                                 } else {
                                     // If sign in fails, display a message to the user.
