@@ -5,23 +5,15 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.view.MenuItem;
-import com.google.android.material.navigation.NavigationView;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
 
-    TextView userDetailsTextView;
+//    TextView userDetailsTextView;
     FirebaseUser user;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -75,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
 //        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 //        NavigationUI.setupWithNavController(navigationView, navController);
 
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+//        EdgeToEdge.enable(this);
+//        setContentView(R.layout.activity_main);
 
 
 
@@ -107,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (user.isEmailVerified()) {
                 Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                fetchUserDetails();
+//                fetchUserDetails();
             } else {
                 Toast.makeText(MainActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
                 auth.signOut();
@@ -116,24 +108,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchUserDetails() {
-        db.collection("users")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String firstName = documentSnapshot.getString("firstName");
-                        userDetailsTextView.setText(firstName);
-                    } else {
-                        userDetailsTextView.setText(user.getEmail());
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error fetching user data", e);
-                    Toast.makeText(MainActivity.this, "Error fetching user data", Toast.LENGTH_SHORT).show();
-                    userDetailsTextView.setText(user.getEmail());
-                });
-    }
+//    private void fetchUserDetails() {
+//        db.collection("users")
+//                .document(user.getUid())
+//                .get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if (documentSnapshot.exists()) {
+//                        String firstName = documentSnapshot.getString("firstName");
+//                        userDetailsTextView.setText(firstName);
+//                    } else {
+//                        userDetailsTextView.setText(user.getEmail());
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e(TAG, "Error fetching user data", e);
+//                    Toast.makeText(MainActivity.this, "Error fetching user data", Toast.LENGTH_SHORT).show();
+//                    userDetailsTextView.setText(user.getEmail());
+//                });
+//    }
 
     private void goToLoginActivity() {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
