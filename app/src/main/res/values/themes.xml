@@ -13,4 +13,9 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/black</item>
     </style>
+
+    <style name="NavigationViewStyle" parent="Widget.Design.NavigationView">
+        <item name="android:background">@drawable/nav_view_background</item>
+    </style>
+
 </resources>
