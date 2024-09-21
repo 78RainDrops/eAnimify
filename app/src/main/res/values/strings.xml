@@ -33,5 +33,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Animal Library</string>
+    <string name="menu_library">Library</string>
+
 
 </resources>

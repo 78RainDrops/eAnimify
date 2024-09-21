@@ -7,9 +7,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import android.view.MenuItem;
@@ -52,6 +55,38 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .setAnchorView(R.id.appbar).show();
+            }
+        });
+
+        // Find the NavController
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+
+// Find the buttons in your content_main layout
+        Button button1 = findViewById(R.id.btn_home); // Replace with the ID of your first button
+        Button button2 = findViewById(R.id.btn_gallery); // Replace with the ID of your second button
+        Button button3 = findViewById(R.id.btn_animal_library); // Replace with the ID of your third button
+
+// Set OnClickListener for the first button
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.nav_home); // Replace with the destination ID for the first button
+            }
+        });
+
+// Set OnClickListener for the second button
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.nav_gallery); // Replace with the destination ID for the second button
+            }
+        });
+
+// Set OnClickListener for the third button
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.nav_animal_library); // Replace with the destination ID for the third button
             }
         });
 
