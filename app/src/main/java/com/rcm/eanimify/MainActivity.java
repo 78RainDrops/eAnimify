@@ -2,21 +2,31 @@ package com.rcm.eanimify;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import static com.rcm.eanimify.R.id.nav_animal_library;
+import static com.rcm.eanimify.R.id.nav_gallery;
+import static com.rcm.eanimify.R.id.nav_home;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.customview.widget.Openable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.view.MenuItem;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -58,52 +68,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Find the NavController
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-
-// Find the buttons in your content_main layout
-        Button button1 = findViewById(R.id.btn_home); // Replace with the ID of your first button
-        Button button2 = findViewById(R.id.btn_gallery); // Replace with the ID of your second button
-        Button button3 = findViewById(R.id.btn_animal_library); // Replace with the ID of your third button
-
-// Set OnClickListener for the first button
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.nav_home); // Replace with the destination ID for the first button
-            }
-        });
-
-// Set OnClickListener for the second button
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.nav_gallery); // Replace with the destination ID for the second button
-            }
-        });
-
-// Set OnClickListener for the third button
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.nav_animal_library); // Replace with the destination ID for the third button
-            }
-        });
-
-//        DrawerLayout drawer = binding.main;
-//        NavigationView navigationView = binding.navView;
-//        // Passing each menu ID as a set of Ids because each
-//        // menu should be considered as top level destinations.
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-//                .setOpenableLayout(drawer)
-//                .build();
+// Find the NavController
 //        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-//        NavigationUI.setupWithNavController(navigationView, navController);
 
-//        EdgeToEdge.enable(this);
-//        setContentView(R.layout.activity_main);
+// Find the LinearLayout containing your buttons
+//        LinearLayout buttonLayout = findViewById(R.id.buttonLayout); // Replace with your LinearLayout's ID
+
+// Find the buttons within the LinearLayout
+//        Button button1 = findViewById(R.id.btn_home);
+//        Button button2 = findViewById(R.id.btn_gallery);
+//        Button button3 = findViewById(R.id.btn_animal_library);
+
+//// Set OnClickListeners for each button
+//        button1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                navController.navigate(R.id.nav_home);
+//            }
+//        });
+//
+//        button2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                navController.navigate(R.id.nav_gallery);
+//            }
+//        });
+//
+//        button3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                navController.navigate(R.id.nav_animal_library);
+//            }
+//        });
+//
+//// Configure AppBarConfiguration without DrawerLayout
+//        mAppBarConfiguration = new AppBarConfiguration.Builder(
+//                R.id.nav_home, R.id.nav_gallery, R.id.nav_animal_library)
+//                .build(); // No setOpenableLayout() here
+//
+//// Set up ActionBar with NavController
+//        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
 
 
