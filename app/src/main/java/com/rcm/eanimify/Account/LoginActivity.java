@@ -1,5 +1,8 @@
 package com.rcm.eanimify.Account;
 
+import static com.rcm.eanimify.GlobalVariable.mAuth;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -8,6 +11,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -58,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = GlobalVariable.mAuth.getCurrentUser();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
@@ -70,13 +75,13 @@ public class LoginActivity extends AppCompatActivity {
         if (!savedEmail.isEmpty() && !savedPassword.isEmpty()) {
             emailEditText.setText(savedEmail);
             passwordEditText.setText(savedPassword);
-            GlobalVariable.mAuth.signInWithEmailAndPassword(savedEmail, savedPassword)
+            mAuth.signInWithEmailAndPassword(savedEmail, savedPassword)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             progressBar.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
-                                FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                FirebaseUser user = mAuth.getCurrentUser();
                                 if (user != null && user.isEmailVerified()) {
                                     // Email is verified, proceed to MainActivity
                                     Toast.makeText(LoginActivity.this, "Login Successful.", Toast.LENGTH_SHORT).show();
@@ -103,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.account_main);
-        GlobalVariable.mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -196,14 +201,14 @@ public class LoginActivity extends AppCompatActivity {
                      Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
                      return;
                  }
-                 GlobalVariable.mAuth.createUserWithEmailAndPassword(reg__email, reg__password)
+                 mAuth.createUserWithEmailAndPassword(reg__email, reg__password)
                          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                              @Override
                              public void onComplete(@NonNull Task<AuthResult> task) {
                                  progressBar.setVisibility(View.GONE);
                                  if (task.isSuccessful()) {
                                      // Sign in success, update UI with the signed-in user's information
-                                     FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                     FirebaseUser user = mAuth.getCurrentUser();
                                      if (user != null) {
                                          // Create a new user instance
                                          User newUser = new User(reg_firstname, reg_lastname, reg__email);
@@ -287,13 +292,13 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                GlobalVariable.mAuth.signInWithEmailAndPassword(log_email, log_password)
+                mAuth.signInWithEmailAndPassword(log_email, log_password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    FirebaseUser user = GlobalVariable.mAuth.getCurrentUser();
+                                    FirebaseUser user = mAuth.getCurrentUser();
                                     if (user != null && user.isEmailVerified()) {
                                         if (rememberMeCheckBox.isChecked()) {
                                             SharedPreferences preferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
@@ -327,10 +332,42 @@ public class LoginActivity extends AppCompatActivity {
         TextView forgotPasswordTextView = findViewById(R.id.forgot_password);
         forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                EditText emailEditText = findViewById(R.id.login_em); // Assuming this is your email EditText
-                String email = emailEditText.getText().toString();
-                sendPasswordResetEmail(email);
+            public void onClick(View view) {
+                EditText resetMail = new EditText(view.getContext());
+                AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(view.getContext());
+                passwordResetDialog.setTitle("Reset Password ?");
+                passwordResetDialog.setMessage("Enter Your Email To Received Reset Link.");
+                passwordResetDialog.setView(resetMail);
+
+                passwordResetDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // extract the email and send reset link
+                        String mail = resetMail.getText().toString();
+                        if (mail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mail).matches()) {
+                            Toast.makeText(LoginActivity.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+                            return; // Stop execution if email is invalid
+                        }
+                        mAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(LoginActivity.this, "Reset Link Sent To Your Email.", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(LoginActivity.this, "Error ! Reset Link is Not Sent" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+                passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // close the dialog
+                    }
+                });
+                passwordResetDialog.create().show();
             }
         });
 

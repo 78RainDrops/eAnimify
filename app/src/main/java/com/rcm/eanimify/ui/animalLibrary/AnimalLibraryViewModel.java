@@ -10,7 +10,7 @@ public class AnimalLibraryViewModel extends ViewModel {
 
     public AnimalLibraryViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is gallery fragment");
+        mText.setValue("This is aniMAL LIBrary fragment");
     }
 
     public LiveData<String> getText() {

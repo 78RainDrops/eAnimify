@@ -21,14 +21,14 @@ public class AnimalLibraryFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        AnimalLibraryViewModel galleryViewModel =
+        AnimalLibraryViewModel animalLibraryViewModel =
                 new ViewModelProvider(this).get(AnimalLibraryViewModel.class);
 
         binding = FragmentAnimalLibraryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textLibrary;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        animalLibraryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
