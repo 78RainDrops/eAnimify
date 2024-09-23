@@ -22,10 +22,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -34,7 +32,6 @@ import androidx.navigation.ui.NavigationUI;
 import android.view.MenuItem;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,11 +39,9 @@ import com.rcm.eanimify.Account.LoginActivity;
 
 import com.rcm.eanimify.databinding.ActivityMainBinding;
 
-import java.io.File;
-
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+//    private static final String TAG = "MainActivity";
     private static final int CAMERA_REQUEST_CODE = 100;
 
     FirebaseAuth auth;
@@ -56,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     ActivityResultLauncher<Uri> takePictureLauncher;
     Uri imageUri;
@@ -108,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
 
         // Find the LinearLayout containing your buttons
-        LinearLayout buttonLayout = findViewById(R.id.buttonLayout);
+//        LinearLayout buttonLayout = findViewById(R.id.buttonLayout);
 
         // Find the buttons within the LinearLayout
         Button button1 = findViewById(R.id.btn_home);
@@ -138,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         // ... other button click listeners ...
 
         // Configure AppBarConfiguration without DrawerLayout
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
+        AppBarConfiguration mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_animal_library)
                 .build();
 
