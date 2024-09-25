@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -38,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.rcm.eanimify.Account.LoginActivity;
 
 import com.rcm.eanimify.databinding.ActivityMainBinding;
+import com.rcm.eanimify.animalPicture.ImageDisplayActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,16 +81,42 @@ public class MainActivity extends AppCompatActivity {
                 new ActivityResultCallback<Boolean>() {
                     @Override
                     public void onActivityResult(Boolean o) {
-                        try{
-                            if(o){
-                                binding.appbar.ivUser.setImageURI(null);
-                                binding.appbar.ivUser.setImageURI(imageUri);
+                        try {
+                            if (o) {
+                                // Image captured successfully, now start ImageDisplayActivity
+                                Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+                                intent.putExtra("imageUri", imageUri.toString());
+
+                                // Grant temporary permission if using FileProvider
+                                grantUriPermission(
+                                        "com.rcm.eanimify.animalPicture.ImageDisplayActivity",
+                                        imageUri,
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                );
+
+                                startActivity(intent);
                             }
                         } catch (Exception e) {
                             e.getStackTrace();
                         }
                     }
                 });
+
+//        takePictureLauncher = registerForActivityResult(
+//                new ActivityResultContracts.TakePicture(),
+//                new ActivityResultCallback<Boolean>() {
+//                    @Override
+//                    public void onActivityResult(Boolean o) {
+//                        try{
+//                            if(o){
+//                                binding.appbar.ivUser.setImageURI(null);
+//                                binding.appbar.ivUser.setImageURI(imageUri);
+//                            }
+//                        } catch (Exception e) {
+//                            e.getStackTrace();
+//                        }
+//                    }
+//                });
 
     }
 
@@ -165,7 +191,10 @@ private Uri createUri() {
     ContentResolver resolver = getApplicationContext().getContentResolver();
     Uri imageCollection;
     ContentValues imageDetails = new ContentValues();
-    imageDetails.put(MediaStore.Images.Media.DISPLAY_NAME, "image.jpg");
+
+    // Generate a unique file name using a timestamp
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    imageDetails.put(MediaStore.Images.Media.DISPLAY_NAME, "image_" + timestamp + ".jpg");
     imageDetails.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -175,23 +204,7 @@ private Uri createUri() {
     }
     return resolver.insert(imageCollection, imageDetails);
 }
-//    private void registerPictureLauncher() {
-//        takePictureLauncher = registerForActivityResult(
-//                new ActivityResultContracts.TakePicture(),
-//                new ActivityResultCallback<Boolean>() {
-//                    @Override
-//                    public void onActivityResult(Boolean o) {
-//                        try{
-//                            if(o){
-//                                binding.appbar.ivUser.setImageURI(null);
-//                                binding.appbar.ivUser.setImageURI(imageUri);
-//                            }
-//                        } catch (Exception e) {
-//                            e.getStackTrace();
-//                        }
-//                    }
-//                });
-//    }
+
     private void checkCameraPermissionAndOpenCamera(){
         if(ActivityCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
@@ -216,14 +229,14 @@ private Uri createUri() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-            // Do something with the imageBitmap, e.g., display it in an ImageView
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+//            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+//            // Do something with the imageBitmap, e.g., display it in an ImageView
+//        }
+//    }
 
     //for menu or the 3 horizontal doTS IN the top right of the appbaR
     @Override
@@ -241,17 +254,27 @@ private Uri createUri() {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
+
+        SharedPreferences preferences = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
+
         user = auth.getCurrentUser();
         if (user == null) {
             goToLoginActivity();
         } else {
             if (user.isEmailVerified()) {
-                Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-//                fetchUserDetails();
+                if (!isLoggedIn) {
+                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+
+                    // Set the flag in SharedPreferences
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("isLoggedIn", true);
+                    editor.apply();
+                }
+                //                fetchUserDetails();
             } else {
                 Toast.makeText(MainActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
                 auth.signOut();
@@ -259,6 +282,23 @@ private Uri createUri() {
             }
         }
     }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        user = auth.getCurrentUser();
+//        if (user == null) {
+//            goToLoginActivity();
+//        } else {
+//            if (user.isEmailVerified()) {
+//                Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+////                fetchUserDetails();
+//            } else {
+//                Toast.makeText(MainActivity.this, "Please verify your email address", Toast.LENGTH_SHORT).show();
+//                auth.signOut();
+//                goToLoginActivity();
+//            }
+//        }
+//    }
 
 //    private void fetchUserDetails() {
 //        db.collection("users")
