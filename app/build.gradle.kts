@@ -55,4 +55,5 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.firebase.bom)
+    implementation(libs.firebase.storage)
 }

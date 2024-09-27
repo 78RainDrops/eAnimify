@@ -24,10 +24,11 @@
         android:layout_height="0dp"
         android:layout_margin="16dp"
         android:contentDescription="@string/displayed_image"
-        app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/my_toolbar"
-        app:layout_constraintWidth_percent="0.8"  />
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent=".4"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
