@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
 //    id("com.android.application")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.kapt") version "2.0.20"
 }
 
 android {
@@ -34,6 +35,9 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    packagingOptions {
+        exclude("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+    }
 }
 
 dependencies {
@@ -51,9 +55,12 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
+    implementation(libs.firebase.storage)
+    implementation(libs.identity.jvm)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(libs.firebase.bom)
-    implementation(libs.firebase.storage)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.glide)
+    annotationProcessor(libs.hilt.android.compiler)
 }

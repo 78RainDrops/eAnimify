@@ -13,11 +13,14 @@ firebaseFirestore = "25.1.0"
 firebaseAuth = "23.0.0"
 navigationRuntime = "2.8.1"
 navigationUi = "2.8.1"
-carUiLib = "2.6.0"
 legacySupportV4 = "1.0.0"
 lifecycleLivedataKtx = "2.8.6"
 lifecycleViewmodelKtx = "2.8.6"
 navigationFragment = "2.8.1"
+firebaseStorage = "21.0.0"
+glide = "4.13.0"
+hilt = "2.44"
+identityJvm = "202408.1"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -37,8 +40,11 @@ legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", ver
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseBom" }
-
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+#glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

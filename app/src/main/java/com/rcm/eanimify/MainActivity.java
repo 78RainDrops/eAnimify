@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -30,14 +31,24 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.view.MenuItem;
 
+import com.android.identity.util.UUID;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rcm.eanimify.Account.LoginActivity;
+
+import com.bumptech.glide.Glide;
 
 import com.rcm.eanimify.databinding.ActivityMainBinding;
 import com.rcm.eanimify.animalPicture.ImageDisplayActivity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
 
     private ActivityMainBinding binding;
     ActivityResultLauncher<Uri> takePictureLauncher;
@@ -65,6 +78,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appbar.toolbar);
+//        takePictureLauncher = registerForActivityResult(
+//                new ActivityResultContracts.TakePicture(),
+//                new ActivityResultCallback<Boolean>() {
+//                    @Override
+//                    public void onActivityResult(Boolean result) {
+//                        if (result) {
+//                            if (imageUri != null) {
+//                                uploadImageToFirebaseStorage(imageUri);
+//                            } else {
+//                                Toast.makeText(MainActivity.this, "Image URI is null", Toast.LENGTH_SHORT).show();
+//                            }
+//                        } else {
+//                            Toast.makeText(MainActivity.this, "Image capture failed", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
 
 
 //    //for camera
@@ -76,6 +105,43 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+//        if (getIntent().hasExtra("imageUrl")) {
+//            String imageUrl = getIntent().getStringExtra("imageUrl");
+//
+//            // Display the image using Glide
+//            ImageView imageView = findViewById(R.id.displayImageView);
+//            Glide.with(this)
+//                    .load(imageUrl)
+//                    .into(imageView);
+//        } else {
+//            // Handle case where image URL is not found
+//            Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+//        }
+//        takePictureLauncher = registerForActivityResult(
+//                new ActivityResultContracts.TakePicture(),
+//                new ActivityResultCallback<Boolean>() {
+//                    @Override
+//                    public void onActivityResult(Boolean o) {
+//                        try {
+//                            if (o) {
+//                                // Image captured successfully, now start ImageDisplayActivity
+//                                Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+//                                intent.putExtra("imageUri", imageUri.toString());
+//
+//                                // Grant temporary permission if using FileProvider
+//                                grantUriPermission(
+//                                        "com.rcm.eanimify.animalPicture.ImageDisplayActivity",
+//                                        imageUri,
+//                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                                );
+//
+//                                startActivity(intent);
+//                            }
+//                        } catch (Exception e) {
+//                            e.getStackTrace();
+//                        }
+//                    }
+//                });
         takePictureLauncher = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
                 new ActivityResultCallback<Boolean>() {
@@ -83,25 +149,39 @@ public class MainActivity extends AppCompatActivity {
                     public void onActivityResult(Boolean o) {
                         try {
                             if (o) {
-                                // Image captured successfully, now start ImageDisplayActivity
-                                Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-                                intent.putExtra("imageUri", imageUri.toString());
+                                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                                    // User is signed in, proceed with upload
+                                    StorageReference storageRef = storage.getReference();
+                                    StorageReference imageRef = storageRef.child("images/" + imageUri.getLastPathSegment());
 
-                                // Grant temporary permission if using FileProvider
-                                grantUriPermission(
-                                        "com.rcm.eanimify.animalPicture.ImageDisplayActivity",
-                                        imageUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                );
+                                    // Add userId to Storage Metadata
+                                    UploadTask uploadTask = imageRef.putFile(imageUri, new StorageMetadata.Builder()
+                                            .setCustomMetadata("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                            .build());
 
-                                startActivity(intent);
+                                    uploadTask.addOnSuccessListener(taskSnapshot -> {
+                                        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                            String downloadUrl = uri.toString();
+                                            storeImageDetailsInFirestore(downloadUrl);
+
+                                            // Start ImageDisplayActivity with the download URL
+                                            Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+                                            intent.putExtra("imageUrl", downloadUrl);
+                                            startActivity(intent);
+                                        });
+                                    }).addOnFailureListener(e -> {
+                                        Toast.makeText(MainActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
+                                    });
+                                } else {
+                                    // User is not signed in, handle accordingly (e.g., show sign-in prompt)
+                                    Toast.makeText(MainActivity.this, "Please sign in to upload the image", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         } catch (Exception e) {
-                            e.getStackTrace();
+                            e.printStackTrace();
                         }
                     }
                 });
-
 //        takePictureLauncher = registerForActivityResult(
 //                new ActivityResultContracts.TakePicture(),
 //                new ActivityResultCallback<Boolean>() {
@@ -187,6 +267,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 //    for camera
+//private void uploadImageToFirebaseStorage(Uri imageUri) {
+//    StorageReference storageRef = storage.getReference();
+//    StorageReference imageRef = storageRef.child("images/" + imageUri.getLastPathSegment());
+//
+//    UploadTask uploadTask = imageRef.putFile(imageUri);
+//
+//    uploadTask.addOnSuccessListener(taskSnapshot -> {
+//        // Get download URL
+//        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//            String downloadUrl = uri.toString();
+//
+//            // Start ImageDisplayActivity with the download URL
+//            Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+//            intent.putExtra("imageUrl", downloadUrl);
+//            startActivity(intent);
+//        });
+//    }).addOnFailureListener(e -> {
+//        Toast.makeText(MainActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
+//    });
+//}
+private void storeImageDetailsInFirestore(String downloadUrl) {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+    // Generate a unique ID for the image
+    String imageId = java.util.UUID.randomUUID().toString();
+
+    // Get a name for the image (you might want to prompt the user for this)
+    String imageName = "Image_" + imageId; // Or get it from user input
+
+    Map<String, Object> imageData = new HashMap<>();
+    imageData.put("imageUrl", downloadUrl);
+    imageData.put("userId", userId);
+    imageData.put("imageId", imageId);
+    imageData.put("imageName", imageName);
+
+    db.collection("images")
+            .document(imageId) // Use imageId as the document ID
+            .set(imageData)
+            .addOnSuccessListener(aVoid -> {
+                // Handle success
+            })
+            .addOnFailureListener(e -> {
+                // Handle failure
+            });
+}
 private Uri createUri() {
     ContentResolver resolver = getApplicationContext().getContentResolver();
     Uri imageCollection;
@@ -229,6 +355,7 @@ private Uri createUri() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
+
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
