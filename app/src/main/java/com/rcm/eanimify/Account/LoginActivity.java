@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -127,6 +128,12 @@ public class LoginActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     loginForm.setVisibility(View.VISIBLE);
                     createAccountForm.setVisibility(View.GONE);
+                    if (login_email != null) {
+                        login_email.setText("");
+                    }
+                    if (login_password != null) {
+                        login_password.setText("");
+                    }
                 }
             });
         }
@@ -137,6 +144,18 @@ public class LoginActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     loginForm.setVisibility(View.GONE);
                     createAccountForm.setVisibility(View.VISIBLE);
+                    if (reg_first_name != null) {
+                        reg_first_name.setText("");
+                    }
+                    if (reg_last_name != null) {
+                        reg_last_name.setText("");
+                    }
+                    if (reg_email != null) {
+                        reg_email.setText("");
+                    }
+                    if (reg_password != null) {
+                        reg_password.setText("");
+                    }
                 }
             });
         }
@@ -244,6 +263,8 @@ public class LoginActivity extends AppCompatActivity {
                                                      public void onSuccess(Void aVoid) {
                                                          // Email sent successfully
                                                          Toast.makeText(LoginActivity.this, "Verification email sent.", Toast.LENGTH_SHORT).show();
+                                                         loginForm.setVisibility(View.VISIBLE);
+                                                         createAccountForm.setVisibility(View.GONE);
                                                      }
                                                  })
                                                  .addOnFailureListener(new OnFailureListener() {
@@ -426,6 +447,18 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // Helper function to clear EditText fields within a ViewGroup
+    private void clearEditTextFields(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child instanceof EditText) {
+                ((EditText) child).setText("");
+            } else if (child instanceof ViewGroup) {
+                clearEditTextFields((ViewGroup) child); // Recursive call for nested ViewGroups
+            }
+        }
     }
 
 //    @Override

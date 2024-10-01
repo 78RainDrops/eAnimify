@@ -21,6 +21,8 @@ firebaseStorage = "21.0.0"
 glide = "4.13.0"
 hilt = "2.44"
 identityJvm = "202408.1"
+firebaseCrashlyticsBuildtools = "3.0.2"
+room = "2.5.2"
 
 [libraries]
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -45,6 +47,10 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 #glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
