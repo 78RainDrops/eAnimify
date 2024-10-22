@@ -328,6 +328,10 @@ public class LoginActivity extends AppCompatActivity {
                                             editor.putString("password", log_password);
                                             editor.apply();
                                         }
+                                        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE); // Use "user_prefs" for user ID
+                                        SharedPreferences.Editor editor = preferences.edit();
+                                        editor.putString("userId", user.getUid()); // Save user ID
+                                        editor.apply();
                                         // Email is verified, proceed to MainActivity
                                         Toast.makeText(LoginActivity.this, "Login Successful.", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);

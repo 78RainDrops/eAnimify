@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.identity.jvm)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.leanback.grid)
+    implementation(libs.media3.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

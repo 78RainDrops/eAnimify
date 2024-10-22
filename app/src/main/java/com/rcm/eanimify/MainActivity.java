@@ -3,6 +3,7 @@ package com.rcm.eanimify;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -113,47 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-//        takePictureLauncher = registerForActivityResult(
-//                new ActivityResultContracts.TakePicture(),
-//                new ActivityResultCallback<Boolean>() {
-//                    @Override
-//                    public void onActivityResult(Boolean o) {
-//                        try {
-//                            if (o) {
-//                                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//                                    // User is signed in, proceed with upload
-//                                    StorageReference storageRef = storage.getReference();
-//                                    StorageReference imageRef = storageRef.child("images/" + imageUri.getLastPathSegment());
 //
-//                                    // Add userId to Storage Metadata
-//                                    UploadTask uploadTask = imageRef.putFile(imageUri, new StorageMetadata.Builder()
-//                                            .setCustomMetadata("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                            .build());
-//
-//                                    uploadTask.addOnSuccessListener(taskSnapshot -> {
-//                                        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-//                                            String downloadUrl = uri.toString();
-//                                            storeImageDetailsInFirestore(downloadUrl);
-//
-//                                            // Start ImageDisplayActivity with the download URL
-//                                            Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-//                                            intent.putExtra("imageUrl", downloadUrl);
-//                                            startActivity(intent);
-//                                        });
-//                                    }).addOnFailureListener(e -> {
-//                                        Toast.makeText(MainActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
-//                                    });
-//                                } else {
-//                                    // User is not signed in, handle accordingly (e.g., show sign-in prompt)
-//                                    Toast.makeText(MainActivity.this, "Please sign in to upload the image", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-
     }
 
     @Override
@@ -329,8 +290,9 @@ public class MainActivity extends AppCompatActivity {
             Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
             if (imageBitmap != null) {
                 try {
+                    File cacheDir = getDir("cache", Context.MODE_PRIVATE);
                     // Create a temporary file to store the bitmap
-                    File tempFile = File.createTempFile("temp_image", ".jpg", getCacheDir());
+                    File tempFile = File.createTempFile("temp_image", ".jpg", cacheDir);
                     FileOutputStream fos = new FileOutputStream(tempFile);
                     imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     fos.close();

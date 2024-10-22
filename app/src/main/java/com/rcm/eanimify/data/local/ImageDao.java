@@ -15,5 +15,7 @@ public interface ImageDao {
     @Query("SELECT * FROM images WHERE user_id = :userId")
     LiveData<List<ImageEntity>> getImagesForUser(String userId);
 
+    @Query("SELECT image_uri FROM images WHERE user_id = :userId")
+    LiveData<List<String>> getImageUrisForUser(String userId);
 //    LiveData<List<ImageEntity>> getAllImages();
 }
