@@ -3,6 +3,7 @@ package com.rcm.eanimify.ui.gallery;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -10,7 +11,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.media3.common.util.Log;
 
 import com.rcm.eanimify.data.local.ImageEntity;
 import com.rcm.eanimify.data.local.ImageRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GalleryViewModel extends ViewModel {
     // TODO: Implement the ViewModel
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
     private final MutableLiveData<String> mText;
     private LiveData<List<ImageEntity>> imageUrisLiveData;
     private final Application application;
@@ -57,7 +57,7 @@ public class GalleryViewModel extends ViewModel {
         return application;
     }
 
-    @OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+
     public LiveData<List<ImageEntity>> getImageUrisLiveData() {
         SharedPreferences preferences = getApplication().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userId = preferences.getString("userId", null); // Get user ID
@@ -83,101 +83,3 @@ public class GalleryViewModel extends ViewModel {
         }
     }
 }
-//package com.rcm.eanimify.ui.gallery;
-//
-//import android.app.Application;
-//
-//import androidx.annotation.NonNull;
-//import androidx.lifecycle.AndroidViewModel;
-//import androidx.lifecycle.LiveData;
-//import androidx.lifecycle.MutableLiveData;
-//
-//import com.google.firebase.auth.FirebaseAuth;
-//import com.google.firebase.auth.FirebaseUser;
-//import com.rcm.eanimify.data.local.ImageEntity;
-//import com.rcm.eanimify.data.local.ImageRepository;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class GalleryViewModel extends AndroidViewModel {
-//    private LiveData<List<ImageEntity>> images;
-//    private ImageRepository repository;
-//
-//    public GalleryViewModel(@NonNull Application application) {
-//        super(application);
-//        repository = new ImageRepository(application);
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user != null) {
-//            images = repository.getImagesForUser(user.getUid());
-//        } else {
-//            // Handle case where user is not logged in
-//            images = new MutableLiveData<>(new ArrayList<>()); // Or show an error
-//        }
-//    }
-//
-//    public LiveData<List<ImageEntity>> getAllImages() {
-//        return images;
-//    }
-//
-//    public void insert(ImageEntity image) {
-//        repository.insert(image);
-//    }
-//}
-
-//package com.rcm.eanimify.ui.gallery;
-//
-//import android.app.Application;
-//
-//import androidx.annotation.NonNull;
-//import androidx.lifecycle.AndroidViewModel;
-//import androidx.lifecycle.LiveData;
-//import androidx.lifecycle.MutableLiveData;
-//import androidx.lifecycle.ViewModel;
-//
-//import com.google.firebase.auth.FirebaseAuth;
-//import com.google.firebase.auth.FirebaseUser;
-//import com.rcm.eanimify.data.local.ImageEntity;
-//import com.rcm.eanimify.data.local.ImageRepository;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import kotlinx.coroutines.CoroutineScope;
-//
-//public class GalleryViewModel extends AndroidViewModel {
-//    // TODO: Implement the ViewModel
-////    private final MutableLiveData<String> mText;
-////
-////    public GalleryViewModel() {
-////        mText = new MutableLiveData<>();
-////        mText.setValue("This is gallery fragment");
-////    }
-////
-////    public LiveData<String> getText() {
-////        return mText;
-////    }
-////    private LiveData<List<ImageEntity>> images;
-////    private ImageRepository repository;
-////
-////
-////    public GalleryViewModel(@NonNull Application application) {
-////        super(application);
-////        repository = new ImageRepository(application);
-////        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-////        if (user != null) {
-////            images = repository.getImagesForUser(user.getUid());
-////        } else {
-////            // Handle case where user is not logged in
-////            images = new MutableLiveData<>(new ArrayList<>()); // Or show an error
-////        }
-////    }
-////
-////    public LiveData<List<ImageEntity>> getAllImages() {
-////        return images;
-////    }
-////
-////    public void insert(ImageEntity image) {
-////        repository.insert(image);
-////    }
-//}

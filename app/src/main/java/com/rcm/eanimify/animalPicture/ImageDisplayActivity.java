@@ -1,9 +1,7 @@
 package com.rcm.eanimify.animalPicture;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,24 +9,24 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.firestore.util.Executors;
 import com.rcm.eanimify.R;
 import com.rcm.eanimify.data.local.AppDatabase;
 import com.rcm.eanimify.data.local.ImageEntity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ImageDisplayActivity extends AppCompatActivity {
 
@@ -37,6 +35,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_image_display);
 
 
@@ -102,7 +101,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                             imageEntity.imageUri = newFilePath;
                             imageEntity.userId = userId;
 
-                            new SaveImageTask().execute(imageEntity);
+                            saveImage(imageEntity);
 
                         } else {
                             // Handle case where user is not logged in
@@ -128,37 +127,36 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            this.getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-//    private class SaveImageTask extends AsyncTask<ImageEntity, Void, Void> {
+    private void saveImage(ImageEntity imageEntity) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            // Perform database insertion in the background thread
+            db.imageDao().insert(imageEntity);
+
+            // Update UI on the main thread (if needed)
+            runOnUiThread(() -> {
+                Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
+                finish(); // Finish activity after database operation
+            });
+        });
+    }
+//private class SaveImageTask extends AsyncTask<ImageEntity, Void, Void> {
 //
-//        @Override
-//        protected Void doInBackground(ImageEntity... images) {
-//            db.imageDao().insert(images[0]);
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
-//            finish(); // Finish activity after database operation
-//        }
+//    @Override
+//    protected Void doInBackground(ImageEntity... imageEntities) {
+//        db.imageDao().insert(imageEntities[0]);
+//        return null;
 //    }
-private class SaveImageTask extends AsyncTask<ImageEntity, Void, Void> {
-
-    @Override
-    protected Void doInBackground(ImageEntity... imageEntities) {
-        db.imageDao().insert(imageEntities[0]);
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
-        finish(); // Finish activity after database operation
-    }
-}
+//
+//    @Override
+//    protected void onPostExecute(Void aVoid) {
+//        Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
+//        finish(); // Finish activity after database operation
+//    }
+//}
 }

@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
 //    id("com.android.application")
@@ -12,11 +13,18 @@ android {
     defaultConfig {
         applicationId = "com.rcm.eanimify"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
@@ -35,45 +43,56 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    packagingOptions {
-        exclude("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+    packaging {
+        resources {
+            excludes += setOf("/META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+        }
     }
-}
 
-dependencies {
+//    "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+    dependencies {
 
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
-    implementation(libs.compose.theme.adapter)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
-    implementation(libs.navigation.runtime)
-    implementation(libs.navigation.ui)
-    implementation(libs.legacy.support.v4)
-    implementation(libs.lifecycle.livedata.ktx)
-    implementation(libs.lifecycle.viewmodel.ktx)
-    implementation(libs.navigation.fragment)
-    implementation(libs.firebase.storage)
-    implementation(libs.identity.jvm)
-    implementation(libs.firebase.crashlytics.buildtools)
-    implementation(libs.leanback.grid)
-    implementation(libs.media3.common)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.glide)
-    annotationProcessor(libs.hilt.android.compiler)
-    implementation(libs.room.runtime)
+        implementation(libs.appcompat)
+        implementation(libs.material)
+        implementation(libs.activity)
+        implementation(libs.constraintlayout)
+        implementation(libs.compose.theme.adapter)
+        implementation(libs.firebase.auth)
+        implementation(libs.navigation.runtime)
+        implementation(libs.navigation.ui)
+        implementation(libs.legacy.support.v4)
+        implementation(libs.lifecycle.livedata.ktx)
+        implementation(libs.lifecycle.viewmodel.ktx)
+        implementation(libs.navigation.fragment)
+        implementation(libs.firebase.storage)
+        implementation(libs.identity.jvm)
+        implementation(libs.firebase.crashlytics.buildtools)
+        implementation(libs.leanback.grid)
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.ext.junit)
+        androidTestImplementation(libs.espresso.core)
+        implementation(platform(libs.firebase.bom))
+        implementation(libs.glide)
+        annotationProcessor (libs.glide.compiler)
+        annotationProcessor(libs.hilt.android.compiler)
+        implementation(libs.room.runtime)
 //    kapt(libs.room.compiler)
-    annotationProcessor(libs.room.compiler)
-    implementation(libs.room.ktx)
-}
-kapt {
-    correctErrorTypes = true
-    arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
+        annotationProcessor(libs.room.compiler)
+        implementation(libs.room.ktx)
+        implementation(libs.play.services.auth)
+        implementation(libs.firebase.analytics)
+        implementation(libs.firebase.firestore)
+        implementation(libs.play.services.base)
     }
+    // Add compiler arguments for Java warnings
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
+    }
+}
+dependencies {
+    implementation(libs.material)
+    implementation(libs.appcompat)
+    implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
 }

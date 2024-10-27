@@ -5,18 +5,20 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".animalPicture.ImageDisplayActivity">
+    tools:context=".animalPicture.ImageDisplayActivity"
+    android:fitsSystemWindows="false">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/displayed_image" />
+        app:title="@string/displayed_image"
+        android:fitsSystemWindows="true"/>
 
     <ImageView
         android:id="@+id/displayImageView"

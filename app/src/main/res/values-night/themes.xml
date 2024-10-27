@@ -3,5 +3,10 @@
     <style name="Base.Theme.EAnimify" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/login_form_background</item>
+    </style>
+    <style name="Theme.EAnimify" parent="Base.Theme.EAnimify" />
+    <style name="NavigationViewStyle" parent="Widget.Design.NavigationView">
+        <item name="android:background">@drawable/nav_view_background</item>
     </style>
 </resources>

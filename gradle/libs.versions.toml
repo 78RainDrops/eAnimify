@@ -1,33 +1,38 @@
 [versions]
-agp = "8.6.0"
-firebaseBom = "33.2.0"
+agp = "8.6.1"
+compiler = "4.12.0"
+firebaseBom = "33.5.1"
+firebaseFirestore = "25.1.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
-activity = "1.9.2"
+activity = "1.9.3"
 constraintlayout = "2.1.4"
 composeThemeAdapter = "1.2.1"
-firebaseFirestore = "25.1.0"
-firebaseAuth = "23.0.0"
-navigationRuntime = "2.8.1"
-navigationUi = "2.8.1"
+firebaseAuth = "23.1.0"
+navigationRuntime = "2.8.3"
+navigationUi = "2.8.3"
 legacySupportV4 = "1.0.0"
 lifecycleLivedataKtx = "2.8.6"
 lifecycleViewmodelKtx = "2.8.6"
-navigationFragment = "2.8.1"
-firebaseStorage = "21.0.0"
+navigationFragment = "2.8.3"
+firebaseStorage = "21.0.1"
 glide = "4.13.0"
 hilt = "2.44"
 identityJvm = "202408.1"
 firebaseCrashlyticsBuildtools = "3.0.2"
-room = "2.5.2"
+playServicesAuth = "21.2.0"
+playServicesBase = "18.5.0"
+room = "2.6.1"
 leanbackGrid = "1.0.0-alpha03"
-media3Common = "1.4.1"
 
 [libraries]
+glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -36,7 +41,6 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 compose-theme-adapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeThemeAdapter" }
-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "navigationRuntime" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
@@ -46,15 +50,16 @@ lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-view
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-#glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 leanback-grid = { group = "androidx.leanback", name = "leanback-grid", version.ref = "leanbackGrid" }
-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,0 +1,19 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph">
+
+    <fragment
+        android:id="@+id/animalLibraryFragment"
+        android:name="com.rcm.eanimify.ui.animalLibrary.AnimalLibraryFragment"
+        android:label="Animal Library">
+        <action
+            android:id="@+id/action_animalLibraryFragment_to_animalDetailsFragment"
+            app:destination="@id/animalDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/animalDetailsFragment"
+        android:name="com.rcm.eanimify.ui.animalLibrary.AnimalDetailsFragment"
+        android:label="Animal Details" />
+
+</navigation>
