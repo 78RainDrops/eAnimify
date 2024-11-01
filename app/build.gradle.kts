@@ -95,4 +95,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.activity)
+    implementation(libs.preference)
+    implementation(libs.work.runtime)
+    implementation(libs.play.services.oss.licenses)
 }

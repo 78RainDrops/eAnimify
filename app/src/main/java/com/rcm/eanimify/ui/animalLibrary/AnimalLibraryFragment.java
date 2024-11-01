@@ -1,33 +1,35 @@
 package com.rcm.eanimify.ui.animalLibrary;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.rcm.eanimify.MainActivity;
 import com.rcm.eanimify.MyApplication;
 import com.rcm.eanimify.R;
 import com.rcm.eanimify.adapters.AnimalLibraryAdapter;
 import com.rcm.eanimify.databinding.FragmentAnimalLibraryBinding;
 
+
 import java.util.ArrayList;
 
-public class AnimalLibraryFragment extends Fragment  {
+public class AnimalLibraryFragment extends Fragment  implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private FragmentAnimalLibraryBinding binding;
     private RecyclerView recyclerView;
@@ -52,11 +54,14 @@ public class AnimalLibraryFragment extends Fragment  {
 
         animalLibraryViewModel = new ViewModelProvider(this).get(AnimalLibraryViewModel.class);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
 //        final TextView textView = binding.textLibrary;
 //        animalLibraryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         MyApplication myApplication = (MyApplication) getActivity().getApplication();
         AnimalLibraryViewModel sharedViewModel = myApplication.getSharedViewModel();
+        sharedViewModel.fetchDataFromFirebase();
 
         sharedViewModel.data.observe(getViewLifecycleOwner(), commonNames -> {
             if (commonNames != null) {
@@ -66,11 +71,68 @@ public class AnimalLibraryFragment extends Fragment  {
                 progressBar.setVisibility(View.GONE);
             }
         });
+
+        SearchView searchView = binding.searchBar.searchView;
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Handle search query submission (optional)
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Handle search query text changes
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
+        Spinner sortingSpinner = root.findViewById(R.id.sortingSpinner); // Assuming 'sortingSpinner' is the ID of your Spinner
+
+// Create an ArrayAdapter for the dropdown options
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.sorting_options, // Create an array resource 'sorting_options' with "Alphabetical" and "Endanger Level"
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortingSpinner.setAdapter(adapter);
+
+// Set a listener for the Spinner
+        sortingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = parent.getItemAtPosition(position).toString();
+                if (selectedOption.equals("Name")) {
+                    sharedViewModel.setSortingOption("alphabetical");
+                } else if (selectedOption.equals("Endanger Level")) {
+                    sharedViewModel.setSortingOption("endangerLevel");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
         return root;
 
     }
-
-
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("font_size")) {
+            // Font size preference changed, update adapter
+            if (adapter != null) {
+                adapter.notifyDataSetChanged(); // Or use a more targeted update method
+            }
+        }
+    }
 //    @Override
 //    public void onAnimalClick(String animalName) {
 //        NavController navController = Navigation.findNavController(requireView());
@@ -78,7 +140,9 @@ public class AnimalLibraryFragment extends Fragment  {
 //    }
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+    super.onDestroyView();
+    // Unregister listener to avoid memory leaks
+        PreferenceManager.getDefaultSharedPreferences(requireContext()).unregisterOnSharedPreferenceChangeListener(this);
         binding = null;
     }
 

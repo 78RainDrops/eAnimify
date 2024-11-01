@@ -88,6 +88,9 @@
     <string name="family_name">Family Name:</string>
     <string name="province">Province:</string>
     <string name="taxonomic_group">Taxonomic Group:</string>
+    <string name="Filter">Filter</string>
+    <string name="Sortby">Sort by</string>
+    <string name="settings">Settings</string>
 
 
 </resources>

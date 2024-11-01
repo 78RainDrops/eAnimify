@@ -36,6 +36,7 @@ import com.rcm.eanimify.Account.LoginActivity;
 import com.rcm.eanimify.databinding.ActivityMainBinding;
 import com.rcm.eanimify.animalPicture.ImageDisplayActivity;
 
+import com.rcm.eanimify.settings.SettingsActivity;
 import com.rcm.eanimify.ui.animalLibrary.AnimalLibraryViewModel;
 
 import java.io.File;
@@ -63,14 +64,22 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> cameraLauncher;
     private AnimalLibraryViewModel sharedViewModel;
 
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(newBase);
+//        applyOverrideConfiguration(newBase.getResources().getConfiguration()); // Move here
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        FirebaseApp.initializeApp(this);
 
+        getResources().updateConfiguration(getResources().getConfiguration(), getResources().getDisplayMetrics());
+
         MyApplication myApplication = (MyApplication) getApplicationContext();
         sharedViewModel = myApplication.getSharedViewModel();
-        sharedViewModel.fetchDataFromFirebase();
+
 
         auth = FirebaseAuth.getInstance();
 
@@ -137,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
     }
 
     @Override
@@ -199,6 +209,9 @@ public class MainActivity extends AppCompatActivity {
             checkCameraPermissionAndOpenCamera();
         });
     }
+
+
+
 //    for camera
 
 
@@ -270,6 +283,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if  (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
         if (item.getItemId() == R.id.sign_out) {
             signOut();
             return true;
@@ -323,4 +341,5 @@ public class MainActivity extends AppCompatActivity {
 
         goToLoginActivity();
     }
+
 }

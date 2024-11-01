@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="General">
+        <ListPreference
+            android:key="language"
+            android:title="Language"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:defaultValue="en" />
+
+        <ListPreference
+            android:key="theme"
+            android:title="Theme"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="light" />
+
+        <Preference
+            android:key="font_size"
+            android:title="Font Size"
+            android:summary="Adjust the font size of the text" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+        <Preference
+            android:key="about_app"
+            android:title="About the App"
+            android:summary="Information about the app and its developers" />
+
+        <Preference
+            android:key="privacy_policy"
+            android:title="Privacy Policy" />
+
+        <Preference
+            android:key="terms_of_service"
+            android:title="Terms of Service" />
+
+        <Preference
+            android:key="feedback"
+            android:title="Feedback"
+            android:summary="Submit feedback or report issues" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

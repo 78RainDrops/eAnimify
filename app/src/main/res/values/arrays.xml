@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting_options">
+        <item>Name</item>
+        <item>Endanger Level</item>
+    </string-array>
+    <string-array name="language_entries">
+        <item>English</item>
+        <item>Spanish</item>
+        <item>French</item>
+        <!-- Add more language entries as needed -->
+    </string-array>
+
+    <string-array name="language_values">
+        <item>en</item>
+        <item>es</item>
+        <item>fr</item>
+        <!-- Add more language values as needed -->
+    </string-array>
+    <string-array name="theme_entries">
+        <item>Light Mode</item>
+        <item>Dark Mode</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+    <string-array name="endangerment_level_entries">endangerment_level_entries</string-array>
+    <string-array name="endangerment_level_values">endangerment_level_values</string-array>
+    <string-array name="region_entries">region_entries</string-array>
+    <string-array name="region_values">region_values</string-array>
+</resources>
