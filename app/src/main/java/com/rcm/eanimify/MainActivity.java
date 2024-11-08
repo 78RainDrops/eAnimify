@@ -90,31 +90,31 @@ public class MainActivity extends AppCompatActivity {
 
 //    //for camera
 
-        takePictureLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                new ActivityResultCallback<Boolean>() {
-                    @Override
-                    public void onActivityResult(Boolean o) {
-                        try {
-                            if (o) {
-                                // Image captured successfully, now start ImageDisplayActivity
-                                Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-                                intent.putExtra("imageUri", imageUri.toString());
-
-                                // Grant temporary permission if using FileProvider
-                                grantUriPermission(
-                                        "com.rcm.eanimify.animalPicture.ImageDisplayActivity",
-                                        imageUri,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                );
-
-                                startActivity(intent);
-                            }
-                        } catch (Exception e) {
-                            e.getStackTrace();
-                        }
-                    }
-                });
+//        takePictureLauncher = registerForActivityResult(
+//                new ActivityResultContracts.TakePicture(),
+//                new ActivityResultCallback<Boolean>() {
+//                    @Override
+//                    public void onActivityResult(Boolean o) {
+//                        try {
+//                            if (o) {
+//                                // Image captured successfully, now start ImageDisplayActivity
+//                                Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+//                                intent.putExtra("imageUri", imageUri.toString());
+//
+//                                // Grant temporary permission if using FileProvider
+//                                grantUriPermission(
+//                                        "com.rcm.eanimify.animalPicture.ImageDisplayActivity",
+//                                        imageUri,
+//                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                                );
+//
+//                                startActivity(intent);
+//                            }
+//                        } catch (Exception e) {
+//                            e.getStackTrace();
+//                        }
+//                    }
+//                });
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -245,33 +245,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Bitmap imageBitmap = data.getExtras().getParcelable("data");
-            if (imageBitmap != null) {
-                try {
-                    File cacheDir = getDir("cache", Context.MODE_PRIVATE);
-                    // Create a temporary file to store the bitmap
-                    File tempFile = File.createTempFile("temp_image", ".jpg", cacheDir);
-                    FileOutputStream fos = new FileOutputStream(tempFile);
-                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.close();
-
-                    // Pass the file URI to ImageDisplayActivity
-                    Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-                    intent.putExtra("imageUri", tempFile.toURI().toString());
-                    startActivity(intent);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to save image", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(MainActivity.this, "Image capture failed", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+//            Bitmap imageBitmap = data.getExtras().getParcelable("data");
+//            if (imageBitmap != null) {
+//                try {
+//                    File cacheDir = getDir("cache", Context.MODE_PRIVATE);
+//                    // Create a temporary file to store the bitmap
+//                    File tempFile = File.createTempFile("temp_image", ".jpg", cacheDir);
+//                    FileOutputStream fos = new FileOutputStream(tempFile);
+//                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                    fos.close();
+//
+//                    // Pass the file URI to ImageDisplayActivity
+//                    Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+//                    intent.putExtra("imageUri", tempFile.toURI().toString());
+//                    startActivity(intent);
+//                } catch (IOException e) {
+//                    Toast.makeText(MainActivity.this, "Failed to save image", Toast.LENGTH_SHORT).show();
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                Toast.makeText(MainActivity.this, "Image capture failed", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
 
     //for menu or the 3 horizontal doTS IN the top right of the appbaR

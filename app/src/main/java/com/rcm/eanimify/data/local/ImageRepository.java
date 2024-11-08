@@ -35,29 +35,4 @@ public class ImageRepository {
     }
 
 }
-//package com.rcm.eanimify.data.local;
-//
-//import android.app.Application;
-//
-//import androidx.lifecycle.LiveData;
-//
-//import java.util.List;
-//
-//public class ImageRepository {
-//    private ImageDao imageDao;
-//
-//    public ImageRepository(Application application) {
-//        AppDatabase db = AppDatabase.getDatabase(application);
-//        imageDao = db.imageDao();
-//    }
-//
-//    public void insert(ImageEntity image) {
-//        AppDatabase.databaseWriteExecutor.execute(() -> {
-//            imageDao.insert(image);
-//        });
-//    }
-//
-//    public LiveData<List<ImageEntity>> getImagesForUser(String userId) {
-//        return imageDao.getImagesForUser(userId);
-//    }
-//}
+

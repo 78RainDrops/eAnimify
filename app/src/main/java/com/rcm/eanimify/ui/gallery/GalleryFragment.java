@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.rcm.eanimify.R;
 import com.rcm.eanimify.adapters.ImageAdapter;
 import com.rcm.eanimify.databinding.FragmentGalleryBinding;
+import com.rcm.eanimify.decoration.ImageItemDecoration;
 
 public class GalleryFragment extends Fragment {
 
@@ -34,9 +36,7 @@ public class GalleryFragment extends Fragment {
 
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-//
-//        final TextView textView = binding.textGallery;
-//        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
@@ -58,16 +58,11 @@ public class GalleryFragment extends Fragment {
             SharedPreferences preferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
             String userId = preferences.getString("userId", null); // Get user ID
 
-            if (imageEntities != null && !imageEntities.isEmpty()) {
-                // ... (update adapter and hide empty message) ...
-                Toast.makeText(requireContext(), "Images loaded for user: " + userId, Toast.LENGTH_SHORT).show();
-            } else {
-                // ... (show empty message) ...
-                Toast.makeText(requireContext(), "No images found for user: " + userId, Toast.LENGTH_SHORT).show();
-            }
+            Log.e("GalleryFragment", "Images loaded for user: " + userId);
             imageAdapter.setImages(imageEntities);
         });
 
+        imageRecyclerView.addItemDecoration(new ImageItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_margin)));
         imageRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         imageRecyclerView.setAdapter(imageAdapter); // Set adapter after data is loaded
     }

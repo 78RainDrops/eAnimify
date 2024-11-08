@@ -91,6 +91,8 @@
     <string name="Filter">Filter</string>
     <string name="Sortby">Sort by</string>
     <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="no_images_to_display">No images to display</string>
 
 
 </resources>

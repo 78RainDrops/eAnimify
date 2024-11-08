@@ -7,15 +7,7 @@
     android:orientation="vertical"
     tools:context=".animalDetails.AnimalDetailsActivity"
     android:fitsSystemWindows="false">
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/my_toolbar2"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="?attr/actionBarSize"-->
-<!--        android:background="?attr/colorPrimary"-->
-<!--        android:minHeight="?attr/actionBarSize"-->
-<!--        android:theme="?attr/actionBarTheme"-->
-<!--        app:title="@string/animal_information"-->
-<!--    />-->
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar1"
         android:layout_height="wrap_content"

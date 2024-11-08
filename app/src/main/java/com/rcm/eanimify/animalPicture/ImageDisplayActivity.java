@@ -1,8 +1,12 @@
 package com.rcm.eanimify.animalPicture;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,17 +24,27 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 //import com.google.firebase.firestore.util.Executors;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.rcm.eanimify.R;
+import com.rcm.eanimify.animalDetails.AnimalDetailsActivity;
 import com.rcm.eanimify.data.local.AppDatabase;
 import com.rcm.eanimify.data.local.ImageEntity;
+import com.rcm.eanimify.model.TFLiteModelHelper;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ImageDisplayActivity extends AppCompatActivity {
 
     private AppDatabase db;
+    private FirebaseFirestore database;
+    private TFLiteModelHelper tfliteModelHelper;
+    private Button searchButton;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,72 +59,22 @@ public class ImageDisplayActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.displayImageView);
         Button saveButton = findViewById(R.id.saveButton);
         Button discardButton = findViewById(R.id.discardButton);
+        tfliteModelHelper = new TFLiteModelHelper(this);
+        database = FirebaseFirestore.getInstance();
+
+        searchButton = findViewById(R.id.searchButton);
 
         if (getIntent().hasExtra("imageUri")) {
             String imageUriString = getIntent().getStringExtra("imageUri");
-            final Uri imageUri = Uri.parse(getIntent().getStringExtra("imageUri"));
+            imageUri = Uri.parse(imageUriString); // Assign to class-level imageUri
 
             Glide.with(this)
                     .load(imageUri)
                     .into(imageView);
 
+            saveButton.setOnClickListener(v -> saveCapturedImage(imageUriString));
 
-//            saveButton.setOnClickListener(v -> {
-//
-//                if (getIntent().hasExtra("imageUri")) {
-//                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                    if (user != null) {
-//                        String userId = user.getUid();
-//
-//                        ImageEntity image = new ImageEntity();
-//                        image.imageUri = imageUriString;
-//                        image.userId = userId;
-//
-//                        new SaveImageTask().execute(image);
-//
-////                        new Thread(() -> {
-////                            db.imageDao().insert(image);
-////                            runOnUiThread(() -> Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show());
-////                        }).start();
-////                        finish();
-//                    } else {
-//                        // Handle case where user is not logged in
-//                        Toast.makeText(ImageDisplayActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (getIntent().hasExtra("imageUri")) {
-                        String imageUriString = getIntent().getStringExtra("imageUri");
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        if (user != null) {
-                            String userId = user.getUid();
-
-                            // 1. Get the desired directory (cache directory within private storage)
-                            File cacheDir = ImageDisplayActivity.this.getDir("cache", Context.MODE_PRIVATE);
-
-                            // 2. Construct the file path using the original image name
-                            String originalImageName = Uri.parse(imageUriString).getLastPathSegment();
-                            File imageFile = new File(cacheDir, originalImageName);
-                            String newFilePath = imageFile.getAbsolutePath(); // This will be /data/data/com.rcm.eanimify/cache/originalImageName
-
-                            // 3. Create ImageEntity and save to database
-                            ImageEntity imageEntity = new ImageEntity();
-                            imageEntity.imageUri = newFilePath;
-                            imageEntity.userId = userId;
-
-                            saveImage(imageEntity);
-
-                        } else {
-                            // Handle case where user is not logged in
-                            Toast.makeText(ImageDisplayActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            });
-
+            searchButton.setOnClickListener(v -> searchForAnimal());
             discardButton.setOnClickListener(v -> finish());
         } else {
             Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
@@ -123,7 +87,104 @@ public class ImageDisplayActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+
     }
+    private void saveCapturedImage(String imageUriString) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            File cacheDir = this.getDir("cache", Context.MODE_PRIVATE);
+            String originalImageName = Uri.parse(imageUriString).getLastPathSegment();
+            File imageFile = new File(cacheDir, originalImageName);
+            String newFilePath = imageFile.getAbsolutePath();
+
+            ImageEntity imageEntity = new ImageEntity();
+            imageEntity.imageUri = newFilePath;
+            imageEntity.userId = userId;
+
+            saveImage(imageEntity);
+        } else {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void searchForAnimal() {
+        if (imageUri != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                float[] featureVector = tfliteModelHelper.classifyImage(bitmap);
+                findClosestMatch(featureVector);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error processing image", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "No image to search", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void findClosestMatch(float[] featureVector) {
+        database.collection("Animal_ImagesV3")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    double maxSimilarity = 0.0;
+                    String bestMatchAnimalId = null;  // Use animal ID or name for matching
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        List<Double> dbFeatureVector = (List<Double>) document.get("average_feature_vector");
+                        double similarity = calculateCosineSimilarity(featureVector, dbFeatureVector);
+
+                        if (similarity > maxSimilarity) {
+                            maxSimilarity = similarity;
+                            bestMatchAnimalId = document.getString("animal_name");  // Assuming animal_id is stored
+                        }
+                    }
+
+                    if (bestMatchAnimalId != null) {
+                        Intent intent = new Intent(ImageDisplayActivity.this, AnimalDetailsActivity.class);
+                        intent.putExtra("animal_name", bestMatchAnimalId);
+                        intent.putExtra("CAPTURED_IMAGE_URI", imageUri.toString());
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "No matching animal found", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ImageDisplayActivity", "Error finding closest match", e);
+                });
+    }
+
+    private double calculateCosineSimilarity(float[] vec1, List<Double> vec2) {
+        double dotProduct = 0.0;
+        double normVec1 = 0.0;
+        double normVec2 = 0.0;
+
+        for (int i = 0; i < vec1.length; i++) {
+            dotProduct += vec1[i] * vec2.get(i);
+            normVec1 += vec1[i] * vec1[i];
+            normVec2 += vec2.get(i) * vec2.get(i);
+        }
+        return dotProduct / (Math.sqrt(normVec1) * Math.sqrt(normVec2));
+    }
+
+//    private void displayAnimalInfo(String animalName) {
+//        if (animalName != null) {
+//            database.collection("Animal_ImagesV2")
+//                    .whereEqualTo("animal_name", animalName)
+//                    .get()
+//                    .addOnSuccessListener(doc -> {
+//                        if (!doc.isEmpty()) {
+//                            String animalDetails = doc.getDocuments().get(0).getString("details");
+//                            showAnimalDetails(animalDetails);
+//                        }
+//                    });
+//        }
+//    }
+
+//    private void showAnimalDetails(String details) {
+//        Intent intent = new Intent(this, AnimalDetailsActivity.class);
+//        intent.putExtra("CAPTURED_IMAGE_URI", capturedImageUri); // The URI of the captured image
+//        intent.putExtra("MATCHED_ANIMAL_ID", matchedAnimalId);   // The ID of the matched animal from Firestore
+//        startActivity(intent);
+//    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -132,31 +193,28 @@ public class ImageDisplayActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+//    private void saveImage(ImageEntity imageEntity) {
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        executor.execute(() -> {
+//            // Perform database insertion in the background thread
+//            db.imageDao().insert(imageEntity);
+//
+//            // Update UI on the main thread (if needed)
+//            runOnUiThread(() -> {
+//                Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
+//                finish(); // Finish activity after database operation
+//            });
+//        });
+//    }
     private void saveImage(ImageEntity imageEntity) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            // Perform database insertion in the background thread
             db.imageDao().insert(imageEntity);
-
-            // Update UI on the main thread (if needed)
             runOnUiThread(() -> {
-                Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
-                finish(); // Finish activity after database operation
+                Toast.makeText(this, "Image saved to database", Toast.LENGTH_SHORT).show();
+                finish();
             });
         });
-    }
-//private class SaveImageTask extends AsyncTask<ImageEntity, Void, Void> {
-//
-//    @Override
-//    protected Void doInBackground(ImageEntity... imageEntities) {
-//        db.imageDao().insert(imageEntities[0]);
-//        return null;
-//    }
-//
-//    @Override
-//    protected void onPostExecute(Void aVoid) {
-//        Toast.makeText(ImageDisplayActivity.this, "Image saved to database", Toast.LENGTH_SHORT).show();
-//        finish(); // Finish activity after database operation
-//    }
-//}
+}
+
 }

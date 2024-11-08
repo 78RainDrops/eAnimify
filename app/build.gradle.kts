@@ -99,4 +99,6 @@ dependencies {
     implementation(libs.preference)
     implementation(libs.work.runtime)
     implementation(libs.play.services.oss.licenses)
+    implementation (libs.tensorflow.lite)
+    implementation(libs.cardview)
 }

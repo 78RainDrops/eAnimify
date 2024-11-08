@@ -14,18 +14,5 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ImageDao imageDao();
 
-//    private static volatile AppDatabase INSTANCE;
-//
-//    public static AppDatabase getDatabase(final Context context) {
-//        if (INSTANCE == null) {
-//            synchronized (AppDatabase.class) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-//                                    AppDatabase.class, "image_database")
-//                            .build();
-//                }
-//            }
-//        }
-//        return INSTANCE;
-//    }
+
 }

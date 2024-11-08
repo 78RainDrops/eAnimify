@@ -24,6 +24,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -51,9 +52,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-//        WindowInsetsControllerCompat insetsController = new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
-//        insetsController.setAppearanceLightStatusBars(true);
-//        setContentView(R.layout.activity_animal_details);// Create this layout
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -82,83 +81,21 @@ public class AnimalDetailsActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageView3); // Initialize ImageView
         storage = FirebaseStorage.getInstance();
-        // ... find other TextViews
-
-//        String animalName = getIntent().getStringExtra("animalName");
-//        animalNameTextView.setText(animalName);
-//
-//        Log.d("AnimalDetailsActivity", "Received animal name: " + animalName); // Log the received animal name
-//
-//        // Query Firestore for animal details using animalName
-//        db.collection("Endemic Animals")
-//                .whereEqualTo("Common Name", animalName)
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    if (!queryDocumentSnapshots.isEmpty()) {
-//                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0); // Get the first document
-//
-//                        // Extract animal details
-//                        String scientificName = document.getString("Scientific Name");
-//                        String description = document.getString("Description");
-//                        String endangerLevel = document.getString("Endanger Level");
-//                        String familyName = document.getString("Family Name");
-//                        String province = document.getString("Province");
-//                        String taxonomicGroup = document.getString("Taxonomic Group");
-//
-//                        // Update UI elements with the extracted details
-//                        scientificNameTextView.setText(scientificName);
-//                        descriptionTextView.setText(description);
-//                        endangerLevelTextView.setText(endangerLevel);
-//                        familyNameTextView.setText(familyName);
-//                        provinceTextView.setText(province);
-//                        taxonomicGroupTextView.setText(taxonomicGroup);
-//                        // ... Update other TextViews for endangerLevel, familyName, province, taxonomicGroup ...
-//
-//                        Log.d("AnimalDetailsActivity", "Successfully retrieved animal details"); // Log successful retrieval
-//                        db.collection("AnimalImages")
-//                                .whereEqualTo("animal_name", animalName)
-//                                .get()
-//                                .addOnSuccessListener(imageQueryDocumentSnapshots -> {
-//                                    if (!imageQueryDocumentSnapshots.isEmpty()) {
-//                                        DocumentSnapshot imageDocument = imageQueryDocumentSnapshots.getDocuments().get(0);
-//                                        String imagePath = imageDocument.getString("image_url"); // Firebase Storage path
-//
-//                                        if (imagePath != null) {
-//                                            // Get reference to the image in Firebase Storage
-//                                            StorageReference storageRef = storage.getReference().child(imagePath);
-//
-//                                            // Get the download URL from Firebase Storage and load it into the ImageView
-//                                            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-//                                                Glide.with(AnimalDetailsActivity.this)
-//                                                        .load(uri)
-//                                                        .into(imageView);
-//                                                progressBar.setVisibility(View.GONE); // Hide progress bar on success
-//                                            }).addOnFailureListener(e -> {
-//                                                Log.e("AnimalDetailsActivity", "Failed to get download URL", e);
-//                                                progressBar.setVisibility(View.GONE); // Hide progress bar on failure
-//                                            });
-//                                        }
-//                                    } else {
-//                                        Log.d("AnimalDetailsActivity", "No image found for animal: " + animalName);
-//                                        progressBar.setVisibility(View.GONE);
-//                                    }
-//                                })
-//                                .addOnFailureListener(e -> {
-//                                    Log.e("AnimalDetailsActivity", "Error querying Firestore for image", e);
-//                                    progressBar.setVisibility(View.GONE);
-//                                });
-//                    } else {
-//                        Log.d("AnimalDetailsActivity", "No animal found with name: " + animalName); // Log if no animal found
-//                    }
-//                    progressBar.setVisibility(View.GONE);
-//                })
-//                .addOnFailureListener(e -> {
-//                    // Handle error
-//                    Log.e("AnimalDetailsActivity", "Error fetching animal details", e); // Log the error
-//                });
 
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        String capturedImageUri = getIntent().getStringExtra("CAPTURED_IMAGE_URI");
+        String animalName = getIntent().getStringExtra("animal_name");
+
+        // Display the captured image
+        displayCapturedImage(capturedImageUri);
+
+        if (animalName != null) {
+            loadAnimalData(animalName); // Fetch animal details using animal_name
+        } else {
+            Log.e("AnimalDetailsActivity", "No animal name found in Intent");
+        }
 
         // Check if user is already signed in, else perform anonymous sign-in
         FirebaseUser currentUser = auth.getCurrentUser();
@@ -177,6 +114,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
         } else {
             fetchAnimalDetails();  // Call fetch method if already signed in
         }
+
 
     }
 
@@ -232,7 +170,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                 });
     }
     private void fetchImage(String animalName) {
-        db.collection("AnimalImages")
+        db.collection("Animal_ImagesV3")
                 .whereEqualTo("animal_name", animalName)
                 .get()
                 .addOnSuccessListener(imageQueryDocumentSnapshots -> {
@@ -286,53 +224,47 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                 });
     }
 
-//    private void fetchImage(String animalName) {
-//        db.collection("AnimalImages")
-//                .whereEqualTo("animal_name", animalName)
-//                .get()
-//                .addOnSuccessListener(imageQueryDocumentSnapshots -> {
-//                    if (!imageQueryDocumentSnapshots.isEmpty()) {
-//                        DocumentSnapshot imageDocument = imageQueryDocumentSnapshots.getDocuments().get(0);
-//                        String imagePath = imageDocument.getString("image_url"); // Get the full Storage path
+    private void displayCapturedImage(String capturedImageUri) {
+        // Load the captured image into the ImageView (you can use Glide or Picasso)
+        progressBar.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(capturedImageUri)  // Assuming the captured image is passed as a URI string
+                .placeholder(R.drawable.ic_images)  // Optional placeholder image
+                .into(imageView);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void loadAnimalData(String animalName) {
+        // Query Firestore using animal_name to get animal details
+        db.collection("Endemic Animals")
+                .whereEqualTo("Common Name", animalName) // Use "Common Name" field
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        // Extract animal details
+                        String scientificName = document.getString("Scientific Name");
+                        String description = document.getString("Description");
+                        String endangerLevel = document.getString("Endanger Level");
+                        String familyName = document.getString("Family Name");
+                        String province = document.getString("Province");
+                        String taxonomicGroup = document.getString("Taxonomic Group");
+
+                        // Set the fetched data to the TextViews
+                        animalNameTextView.setText(animalName);
+                        scientificNameTextView.setText(scientificName);
+                        descriptionTextView.setText(description);
+                        endangerLevelTextView.setText(endangerLevel);
+                        familyNameTextView.setText(familyName);
+                        provinceTextView.setText(province);
+                        taxonomicGroupTextView.setText(taxonomicGroup);
+                    }else{
+                        Log.d("AnimalDetailsActivity", "No animal found with name: " + animalName);
+                    }
+        }).addOnFailureListener(e -> {
+                    Log.e("AnimalDetailsActivity", "Error fetching animal details", e);        });
+    }
+
 //
-//                        if (imagePath != null) {
-//                            // Create a StorageReference using the full path
-//                            StorageReference storageRef = storage.getReferenceFromUrl(imagePath);
-//
-//                            storageRef.getDownloadUrl()
-//                                    .addOnSuccessListener(uri -> {
-//                                        Glide.with(this).load(uri).into(imageView);
-//                                        progressBar.setVisibility(View.GONE);
-//                                    })
-//                                    .addOnFailureListener(e -> {
-//                                        if (e instanceof StorageException) {
-//                                            StorageException storageException = (StorageException) e;
-//                                            if (storageException.getErrorCode() == StorageException.ERROR_OBJECT_NOT_FOUND) {
-//                                                // File not found
-//                                                Log.e("AnimalDetailsActivity", "File not found: " + storageException.getMessage());
-//                                            } else {
-//                                                // Other StorageException occurred
-//                                                Log.e("AnimalDetailsActivity", "Storage Error: " + storageException.getMessage());
-//                                            }
-//                                        } else {
-//                                            // Other error occurred
-//                                            Log.e("AnimalDetailsActivity", "Failed to get download URL", e);
-//                                        }
-//                                        progressBar.setVisibility(View.GONE);
-//                                    });
-//                        } else {
-//                            Log.e("AnimalDetailsActivity", "Image path is null for animal: " + animalName);
-//                            progressBar.setVisibility(View.GONE);
-//                        }
-//                    } else {
-//                        Log.e("AnimalDetailsActivity", "No image document found for animal: " + animalName);
-//                        progressBar.setVisibility(View.GONE);
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("AnimalDetailsActivity", "Error querying Firestore for image", e);
-//                    progressBar.setVisibility(View.GONE);
-//                });
-//    }
 
 }

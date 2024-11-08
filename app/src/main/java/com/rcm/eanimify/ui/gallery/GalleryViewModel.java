@@ -38,14 +38,6 @@ public class GalleryViewModel extends ViewModel {
 
         imageUrisLiveData = imageRepository.getImagesForUser(userId);
 
-        // Transform allImages to imageUrisLiveData
-//        imageUrisLiveData = Transformations.map(allImages, images -> {
-//            List<Uri> uris = new ArrayList<>();
-//            for (ImageEntity image : images) {
-//                uris.add(Uri.parse(image.imageUri));
-//            }
-//            return uris;
-//        });
     }
 
     public LiveData<String> getText() {
@@ -68,7 +60,7 @@ public class GalleryViewModel extends ViewModel {
     // Factory class to create GalleryViewModel with Application parameter
     public static class GalleryViewModelFactory implements ViewModelProvider.Factory {
         private final Application application;
-  public GalleryViewModelFactory(Application application) {
+        public GalleryViewModelFactory(Application application) {
             this.application = application;
         }
 
@@ -79,7 +71,7 @@ public class GalleryViewModel extends ViewModel {
             if (modelClass.isAssignableFrom(GalleryViewModel.class)) {
                 return (T) new GalleryViewModel(application);
             }
-            throw new IllegalArgumentException("Unknown ViewModel class");
-        }
+                throw new IllegalArgumentException("Unknown ViewModel class");
+            }
     }
 }

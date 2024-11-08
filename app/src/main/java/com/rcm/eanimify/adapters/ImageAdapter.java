@@ -34,15 +34,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         return new ImageViewHolder(view);
     }
 
-//    @Override
-//    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-//        ImageEntity image = images.get(position);
-//        Glide.with(context)
-//                .load(Uri.parse(image.imageUri))
-////                .placeholder(R.drawable.placeholder_image) // Add a placeholder
-////                .error(R.drawable.error_image) // Add an error image
-//                .into(holder.imageView);
-//    }
 
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         ImageEntity image = images.get(position);
@@ -72,10 +63,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         return images.size();
     }
 
-//    public void setImages(List<ImageEntity> images) {
-//        this.images = images;
-//        notifyDataSetChanged();
-//    }
     public void setImages(List<ImageEntity> imageUris) { // Change parameter type to List<Uri>
         this.images = imageUris;
         notifyDataSetChanged();
