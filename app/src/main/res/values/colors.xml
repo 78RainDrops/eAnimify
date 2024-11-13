@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#89B086</color>
 
     <color name="login_form_background">#89B086</color>
     <color name="login_form_button">#006400</color>

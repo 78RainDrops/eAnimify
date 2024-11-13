@@ -25,6 +25,7 @@ import androidx.room.Entity;
 @Entity(tableName = "images")
 public class ImageEntity {
     @PrimaryKey(autoGenerate = true)
+//    @ColumnInfo(name = "image_id")
     public int id;
 
 //    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
@@ -34,6 +35,15 @@ public class ImageEntity {
     @NonNull
     public String imageUri;
 
-    @ColumnInfo(name = "user_id") // Add this field for user association
+    @ColumnInfo(name = "user_id")
     public String userId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    @NonNull
+    public String getImageUri() {
+        return imageUri;
+    }
 }

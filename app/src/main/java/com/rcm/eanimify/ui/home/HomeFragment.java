@@ -34,19 +34,21 @@ public class HomeFragment extends Fragment implements SharedPreferences.OnShared
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+        setFontSize(sharedPreferences);
+
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         return root;
     }
 
+    private void setFontSize(SharedPreferences sharedPreferences) {
+        int fontSize = sharedPreferences.getInt("font_size", 16); // Default to 16sp
+        binding.textHome.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+    }
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("font_size")) {
-            // Font size preference changed, update text size
-            int fontSize = sharedPreferences.getInt("font_size", 16); // Default to 16sp
-            binding.textHome.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
-        }
+        setFontSize(sharedPreferences);
     }
 
     @Override

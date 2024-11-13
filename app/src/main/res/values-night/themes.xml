@@ -4,6 +4,7 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
         <item name="colorPrimary">@color/login_form_background</item>
+        <item name="android:windowSplashScreenBackground">@color/white</item>
     </style>
     <style name="Theme.EAnimify" parent="Base.Theme.EAnimify" />
     <style name="NavigationViewStyle" parent="Widget.Design.NavigationView">

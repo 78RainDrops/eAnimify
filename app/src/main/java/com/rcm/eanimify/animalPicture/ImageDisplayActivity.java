@@ -127,30 +127,40 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     double maxSimilarity = 0.0;
-                    String bestMatchAnimalId = null;  // Use animal ID or name for matching
+                    String bestMatchAnimalId = null;
+
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         List<Double> dbFeatureVector = (List<Double>) document.get("average_feature_vector");
                         double similarity = calculateCosineSimilarity(featureVector, dbFeatureVector);
 
+                        Log.d("ImageDisplayActivity", "Similarity with " + document.getString("animal_name") + ": " + similarity);
+
                         if (similarity > maxSimilarity) {
                             maxSimilarity = similarity;
-                            bestMatchAnimalId = document.getString("animal_name");  // Assuming animal_id is stored
+                            bestMatchAnimalId = document.getString("animal_name");
                         }
                     }
 
-                    if (bestMatchAnimalId != null) {
-                        Intent intent = new Intent(ImageDisplayActivity.this, AnimalDetailsActivity.class);
-                        intent.putExtra("animal_name", bestMatchAnimalId);
-                        intent.putExtra("CAPTURED_IMAGE_URI", imageUri.toString());
-                        startActivity(intent);
+                    // Confidence check: only proceed if similarity exceeds 80%
+                    if (maxSimilarity > 0.8) {
+                        if (bestMatchAnimalId != null) {
+                            Log.d("ImageDisplayActivity", "Match found: " + bestMatchAnimalId + " with similarity: " + maxSimilarity);
+                            Intent intent = new Intent(ImageDisplayActivity.this, AnimalDetailsActivity.class);
+                            intent.putExtra("animal_name", bestMatchAnimalId);
+                            intent.putExtra("CAPTURED_IMAGE_URI", imageUri.toString());
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(this, "No matching animal found", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(this, "No matching animal found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No animal match found with sufficient confidence", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("ImageDisplayActivity", "Error finding closest match", e);
                 });
     }
+
 
     private double calculateCosineSimilarity(float[] vec1, List<Double> vec2) {
         double dotProduct = 0.0;

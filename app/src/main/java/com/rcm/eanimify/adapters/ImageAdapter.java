@@ -1,10 +1,12 @@
 package com.rcm.eanimify.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.rcm.eanimify.R;
+import com.rcm.eanimify.animalPicture.ImageDisplayActivity;
 import com.rcm.eanimify.data.local.ImageEntity;
 
 import java.io.File;
@@ -26,6 +29,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public ImageAdapter(Context context) { // Add constructor
         this.context = context;
     }
+    private List<ImageEntity> selectedImages = new ArrayList<>();
+    private boolean isSelectionMode = false;
 
     @NonNull
     @Override
@@ -56,6 +61,37 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                     .load(R.drawable.placeholder_image) // Replace with your placeholder drawable
                     .into(holder.imageView);
         }
+
+
+        holder.checkBox.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
+        holder.checkBox.setChecked(selectedImages.contains(images.get(position)));
+
+        holder.itemView.setOnClickListener(v -> {
+            if (isSelectionMode) {
+                // Toggle checkbox state in selection mode
+                holder.checkBox.setChecked(!holder.checkBox.isChecked());
+                if (holder.checkBox.isChecked()) {
+                    selectedImages.add(images.get(position));
+                } else {
+                    selectedImages.remove(images.get(position));
+                }
+            } else {
+                // Open ImageDisplayActivity in normal mode
+                Intent intent = new Intent(context, ImageDisplayActivity.class);
+                intent.putExtra("imageUri", Uri.fromFile(new File(images.get(position).imageUri)).toString());
+                context.startActivity(intent);
+            }
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            if (!isSelectionMode) {
+                isSelectionMode = true;
+                holder.checkBox.setChecked(true);
+                selectedImages.add(images.get(position));
+                notifyDataSetChanged(); // Update all items to show checkboxes
+            }
+            return true; // Consume the long press event
+        });
+
     }
 
     @Override
@@ -70,10 +106,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        CheckBox checkBox;
 
         public ImageViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
+            checkBox = itemView.findViewById(R.id.checkBox);
         }
+    }
+    public List<ImageEntity> getSelectedImages() {
+        return selectedImages;
+    }
+
+    public void clearSelection() {
+        isSelectionMode = false;
+        selectedImages.clear();
+        notifyDataSetChanged();
+    }
+    public boolean isSelectionMode() {
+        return isSelectionMode;
     }
 }

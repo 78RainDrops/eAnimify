@@ -6,5 +6,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="windowActionBarOverlay">true</item>
+<!--        <item name="android:windowSplashScreenBackground">@color/login_form_background</item> &lt;!&ndash; Background color of the splash screen &ndash;&gt;-->
+
     </style>
 </resources>

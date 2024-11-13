@@ -93,6 +93,8 @@
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="no_images_to_display">No images to display</string>
+    <string name="delete">Delete</string>
+    <string name="splash_logo_description">Splash logo</string>
 
 
 </resources>

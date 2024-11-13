@@ -2,6 +2,7 @@ package com.rcm.eanimify.data.local;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -17,5 +18,7 @@ public interface ImageDao {
 
     @Query("SELECT image_uri FROM images WHERE user_id = :userId")
     LiveData<List<String>> getImageUrisForUser(String userId);
-//    LiveData<List<ImageEntity>> getAllImages();
+
+    @Query("DELETE FROM images WHERE image_uri = :uri")
+    void deleteImageByUri(String uri);
 }
