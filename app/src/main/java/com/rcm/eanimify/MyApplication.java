@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.preference.PreferenceManager;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.rcm.eanimify.ui.animalLibrary.AnimalLibraryViewModel;
 
 import java.util.Locale;
@@ -47,6 +49,11 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
         } else if (themeValue.equals("dark")) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true) // Enable offline persistence
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
     }
 
     public AnimalLibraryViewModel getSharedViewModel() {

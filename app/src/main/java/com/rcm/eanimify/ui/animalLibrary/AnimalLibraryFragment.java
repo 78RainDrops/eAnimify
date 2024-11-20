@@ -3,7 +3,10 @@ package com.rcm.eanimify.ui.animalLibrary;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -61,6 +64,13 @@ public class AnimalLibraryFragment extends Fragment  implements SharedPreference
 //        animalLibraryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         MyApplication myApplication = (MyApplication) getActivity().getApplication();
         AnimalLibraryViewModel sharedViewModel = myApplication.getSharedViewModel();
+//
+//        if(isNetworkAvailable()){
+//            sharedViewModel.fetchDataFromFirebase();
+//        }else {
+//            sharedViewModel.loadDataFromPreferences();
+//        }
+
         sharedViewModel.fetchDataFromFirebase();
 
         sharedViewModel.data.observe(getViewLifecycleOwner(), commonNames -> {
@@ -124,6 +134,12 @@ public class AnimalLibraryFragment extends Fragment  implements SharedPreference
         return root;
 
     }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager =  (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals("font_size")) {

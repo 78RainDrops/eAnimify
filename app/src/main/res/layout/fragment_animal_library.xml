@@ -51,7 +51,15 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contain"
-        />
+        android:paddingBottom="20dp"/>
+<!--    <TextView-->
+<!--        android:id="@+id/offlineTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:text="Showing cached data"-->
+<!--        android:textColor="@android:color/holo_red_dark"-->
+<!--        android:visibility="gone" />-->
 
     <!--    <TextView-->
 <!--        android:id="@+id/text_library"-->

@@ -1,5 +1,7 @@
 package com.rcm.eanimify.ui.animalLibrary;
 
+import android.app.Application;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -7,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -22,10 +25,18 @@ public class AnimalLibraryViewModel extends ViewModel {
     private MutableLiveData<ArrayList<String>> _data = new MutableLiveData<ArrayList<String>>();
     public LiveData<ArrayList<String>> data = _data;
     private String currentSortingOption = "alphabetical";
+//    private SharedPreferences sharedPreferences;
 
     public AnimalLibraryViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is aniMAL Library fragment");
+//        sharedPreferences = application.getSharedPreferences("MyPrefs", Application.MODE_PRIVATE);
+
+        // Enable Firestore offline persistence
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true) // Enable offline persistence
+                .build();
+        db.setFirestoreSettings(settings);
 //        fetchDataFromFirebase();
     }
 
@@ -124,6 +135,9 @@ public class AnimalLibraryViewModel extends ViewModel {
     }
     public LiveData<String> getText() {
         return mText;
+    }
+    public LiveData<ArrayList<String>> getData() {
+        return data; // Expose LiveData for observing data changes
     }
 
 }

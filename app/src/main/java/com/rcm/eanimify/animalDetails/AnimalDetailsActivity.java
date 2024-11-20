@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowCompat;
@@ -30,6 +31,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
+import com.rcm.eanimify.NetworkUtils;
+import com.rcm.eanimify.data.local.Animal;
+import com.rcm.eanimify.data.local.AnimalDatabase;
 import com.rcm.eanimify.databinding.ActivityAnimalDetailsBinding;
 
 import com.rcm.eanimify.R;
@@ -112,7 +116,12 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
-            fetchAnimalDetails();  // Call fetch method if already signed in
+            if (NetworkUtils.isNetworkAvailable(this)) {
+                fetchAnimalDetails(); // Call fetch method if already signed in
+            } else {
+                fetchAnimalDetails();
+                Toast.makeText(this, "Please Connect to Internet to Load Images", Toast.LENGTH_SHORT).show();
+            }
         }
 
 
@@ -159,7 +168,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                         // Update other TextViews here...
 
                         // Fetch image from Firebase Storage
-                        fetchImage(animalName);
+                        fetchImage(animalName, scientificName, description, endangerLevel, familyName, province, taxonomicGroup);
                     } else {
                         Log.d("AnimalDetailsActivity", "No animal found with name: " + animalName);
                     }
@@ -169,7 +178,9 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                     Log.e("AnimalDetailsActivity", "Error fetching animal details", e);
                 });
     }
-    private void fetchImage(String animalName) {
+    private void fetchImage(String animalName, String scientificName, String description, String endangerLevel, String familyName, String province, String taxonomicGroup) {
+        progressBar.setVisibility(View.VISIBLE); // Show progress bar before starting the fetch
+
         db.collection("Animal_ImagesV3")
                 .whereEqualTo("animal_name", animalName)
                 .get()
@@ -179,48 +190,59 @@ public class AnimalDetailsActivity extends AppCompatActivity {
                         String imagePath = imageDocument.getString("image_url"); // Get the full Storage path
 
                         if (imagePath != null) {
+                            // Create a StorageReference using the image path
+                            StorageReference storageRef;
+
                             // Convert HTTPS URL to GS URL if needed
                             if (imagePath.startsWith("https://storage.googleapis.com/")) {
                                 String bucketName = "eanimifyapplication-32745.appspot.com"; // Your bucket name
                                 String gsPath = imagePath.replace("https://storage.googleapis.com/" + bucketName + "/", "gs://" + bucketName + "/");
-                                // Create a StorageReference using the GS path
-                                StorageReference storageRef = storage.getReferenceFromUrl(gsPath);
-
-                                storageRef.getDownloadUrl()
-                                        .addOnSuccessListener(uri -> {
-                                            Glide.with(this).load(uri).into(imageView);
-                                            progressBar.setVisibility(View.GONE);
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.e("AnimalDetailsActivity", "Failed to get download URL", e);
-                                            progressBar.setVisibility(View.GONE);
-                                        });
+                                storageRef = storage.getReferenceFromUrl(gsPath);
                             } else {
-                                // Create a StorageReference using the full GS path
-                                StorageReference storageRef = storage.getReferenceFromUrl(imagePath);
-
-                                storageRef.getDownloadUrl()
-                                        .addOnSuccessListener(uri -> {
-                                            Glide.with(this).load(uri).into(imageView);
-                                            progressBar.setVisibility(View.GONE);
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.e("AnimalDetailsActivity", "Failed to get download URL", e);
-                                            progressBar.setVisibility(View.GONE);
-                                        });
+                                storageRef = storage.getReferenceFromUrl(imagePath);
                             }
+
+                            // Get the download URL
+                            storageRef.getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                        // Load the image using Glide
+                                        Glide.with(this).load(uri).into(imageView);
+
+                                        // Store in local database
+                                        Animal animal = new Animal();
+                                        animal.setCommonName(animalName);
+                                        animal.setScientificName(scientificName);
+                                        animal.setDescription(description);
+                                        animal.setEndangerLevel(endangerLevel);
+                                        animal.setFamilyName(familyName);
+                                        animal.setProvince(province);
+                                        animal.setTaxonomicGroup(taxonomicGroup);
+                                        animal.setImageUrl(imagePath); // Store the original image path
+
+                                        // Insert into Room database
+//                                        new Thread(() -> {
+//                                            AnimalDatabase db = AnimalDatabase.getDatabase(getApplicationContext());
+//                                            db.animalDao().insert(animal);
+//                                        }).start();
+
+                                        progressBar.setVisibility(View.GONE); // Hide progress bar on success
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("AnimalDetailsActivity", "Failed to get download URL", e);
+                                        progressBar.setVisibility(View.GONE); // Hide progress bar on failure
+                                    });
                         } else {
                             Log.e("AnimalDetailsActivity", "Image path is null for animal: " + animalName);
-                            progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE); // Hide progress bar if image path is null
                         }
                     } else {
                         Log.e("AnimalDetailsActivity", "No image document found for animal: " + animalName);
-                        progressBar.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE); // Hide progress bar if no document found
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("AnimalDetailsActivity", "Error querying Firestore for image", e);
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE); // Hide progress bar on query failure
                 });
     }
 
@@ -264,6 +286,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
                     Log.e("AnimalDetailsActivity", "Error fetching animal details", e);        });
     }
+
 
 //
 
