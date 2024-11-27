@@ -20,6 +20,7 @@ import com.rcm.eanimify.data.local.ImageEntity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder>{
 
@@ -42,21 +43,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         ImageEntity image = images.get(position);
-        Uri fileUri = Uri.fromFile(new File(image.imageUri)); // Convert to file:// URI
+//        Uri fileUri = Uri.fromFile(new File(image.imageUri)); // Convert to file:// URI
         String imagePath = image.imageUri;
 //        Glide.with(context)
 //                .load(fileUri)
 //                .into(holder.imageView);
-        File imageFile = new File(imagePath);
+        Uri fileUri = Uri.parse(imagePath);
+        File imageFile = new File(Objects.requireNonNull(fileUri.getPath()));
 
         if (imageFile.exists()) {
             // Load the image using Glide if the file exists
             Glide.with(context)
-                    .load(imageFile)
+                    .load(fileUri) // Use the URI directly
                     .into(holder.imageView);
         } else {
             // Handle the case where the file doesn't exist
-            // e.g., display a placeholder image or show an error message
             Glide.with(context)
                     .load(R.drawable.placeholder_image) // Replace with your placeholder drawable
                     .into(holder.imageView);

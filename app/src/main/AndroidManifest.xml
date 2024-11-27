@@ -26,33 +26,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EAnimify">
-
+        <activity
+            android:name=".termsOfService.TermsOfServiceActivity"
+            android:exported="false" />
         <!-- Splash Activity as Launcher -->
-<!--        <activity-->
-<!--            android:name=".SplashActivity"-->
-<!--            android:theme="@style/Theme.EAnimify"-->
-<!--            android:configChanges="orientation|keyboardHidden|screenSize"-->
-<!--            android:launchMode="singleTask"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-        <activity android:name=".MainActivity" android:exported="false" />
-        <!-- Login Activity -->
-        <activity android:name=".Account.LoginActivity" android:exported="true">
+        <!-- <activity -->
+        <!-- android:name=".SplashActivity" -->
+        <!-- android:theme="@style/Theme.EAnimify" -->
+        <!-- android:configChanges="orientation|keyboardHidden|screenSize" -->
+        <!-- android:launchMode="singleTask" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" /> <!-- Login Activity -->
+        <activity
+            android:name=".Account.LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".animalDetails.AnimalDetailsActivity" android:exported="false" />
-        <activity android:name=".animalPicture.ImageDisplayActivity" android:exported="false" />
-        <activity android:name=".settings.SettingsActivity" android:exported="false" />
-        <activity android:name=".policy.PrivacyPolicyActivity" android:exported="false" />
-
-        <!-- FileProvider for File Sharing -->
+        <activity
+            android:name=".animalDetails.AnimalDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".animalPicture.ImageDisplayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".policy.PrivacyPolicyActivity"
+            android:exported="false" /> <!-- FileProvider for File Sharing -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"

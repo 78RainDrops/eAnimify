@@ -57,20 +57,26 @@ public class GalleryViewModel extends ViewModel {
     }
 
     public void deleteImage(String imageUri) {
-        File file = new File(imageUri);
+        // Check if the imageUri starts with "file:" and remove it for file operations
+        String filePath = imageUri.startsWith("file:") ? imageUri.substring(5) : imageUri; // Remove "file:" prefix
+
+        File file = new File(filePath); // Create File object without "file:" prefix
+        Log.d("DeleteImage", "Attempting to delete file at path: " + file.getAbsolutePath()); // Log the path
+
         if (file.exists()) {
             boolean deleted = file.delete();
             if (deleted) {
-                Log.d("DeleteImage", "File deleted successfully: " + imageUri);
+                Log.d("DeleteImage", "File deleted successfully: " + filePath);
                 new Thread(() -> {
-                    imageDao.deleteImageByUri(imageUri);
+                    // Use the original imageUri with "file:" prefix for database deletion
+                    imageDao.deleteImageByUri(imageUri); // Ensure to use the correct URI format for the database
 
                 }).start();
             } else {
-                Log.e("DeleteImage", "Failed to delete file: " + imageUri);
+                Log.e("DeleteImage", "Failed to delete file: " + filePath);
             }
         } else {
-            Log.e("DeleteImage", "File not found at path: " + imageUri);
+            Log.e("DeleteImage", "File not found at path: " + filePath);
         }
     }
 

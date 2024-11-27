@@ -68,9 +68,6 @@ public class GalleryFragment extends Fragment implements SharedPreferences.OnSha
         imageAdapter = new ImageAdapter(requireContext()); // Initialize ImageAdapter
 
         galleryViewModel.getImageUrisLiveData().observe(getViewLifecycleOwner(), imageEntities -> {
-//            SharedPreferences preferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-            String userId = sharedPreferences.getString("userId", null); // Get user ID
-
             if (imageEntities.isEmpty()) {
                 binding.emptyTextView.setVisibility(View.VISIBLE);  // Show "No images to display"
                 binding.imageRecyclerView.setVisibility(View.GONE); // Hide RecyclerView
@@ -78,8 +75,7 @@ public class GalleryFragment extends Fragment implements SharedPreferences.OnSha
                 binding.emptyTextView.setVisibility(View.GONE);  // Hide "No images to display"
                 binding.imageRecyclerView.setVisibility(View.VISIBLE); // Show RecyclerView
             }
-            imageAdapter.setImages(imageEntities);
-            delButton.setVisibility(View.GONE);
+            imageAdapter.setImages(imageEntities); // Update the adapter with new data
         });
 
         imageRecyclerView.addItemDecoration(new ImageItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_margin)));
@@ -97,10 +93,7 @@ public class GalleryFragment extends Fragment implements SharedPreferences.OnSha
 
                 // Clear selection and refresh the UI
                 imageAdapter.clearSelection();
-                galleryViewModel.getImageUrisLiveData().observe(getViewLifecycleOwner(), imageEntities -> {
-                    imageAdapter.setImages(imageEntities); // Refresh RecyclerView
-                });
-
+                imageAdapter.setImages(galleryViewModel.getImageUrisLiveData().getValue()); // Update the adapter
                 Toast.makeText(requireContext(), "Images deleted successfully", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(requireContext(), "No images selected", Toast.LENGTH_SHORT).show();

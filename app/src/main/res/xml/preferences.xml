@@ -34,7 +34,8 @@
 
         <Preference
             android:key="terms_of_service"
-            android:title="Terms of Service" />
+            android:title="Terms of Service"
+            android:summary="View the terms of service of this application"/>
 
         <Preference
             android:key="feedback"

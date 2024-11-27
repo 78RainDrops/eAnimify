@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -18,10 +20,17 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.firebase.appcheck.BuildConfig;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.rcm.eanimify.R;
 import com.rcm.eanimify.policy.PrivacyPolicyActivity;
+import com.rcm.eanimify.termsOfService.TermsOfServiceActivity;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -93,6 +102,25 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             startActivity(intent);
             return true;
         });
+
+        Preference feedbackPreference = findPreference("feedback");
+        if (feedbackPreference != null) {
+            feedbackPreference.setOnPreferenceClickListener(preference -> {
+                // Handle feedback preference click
+                showFeedbackDialog();
+                return true;
+            });
+
+        };
+        Preference termsOfServicePreference = findPreference("terms_of_service");
+        if (termsOfServicePreference != null) {
+            termsOfServicePreference.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(requireContext(), TermsOfServiceActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
+
     }
     private void showFontSizeDialog() {
         // Create an AlertDialog with font size options
@@ -149,22 +177,58 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //        builder.create().show();
     }
 
-//    private void updateLocale(String language) {
-//        Locale locale = new Locale(language);
-//        Locale.setDefault(locale);
-//
-//        Configuration config = new Configuration();
-//        config.locale = locale;
-//
-//        requireContext().getResources().updateConfiguration(config, requireContext().getResources().getDisplayMetrics());
-//    }
-
     public void updateLocale(String language) {
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.locale = locale;
         requireContext().getResources().updateConfiguration(config, requireContext().getResources().getDisplayMetrics());
+
+    }
+    public void showFeedbackDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Submit Feedback");
+
+        final EditText input = new EditText(requireContext());
+        input.setHint("Enter your feedback here");
+        builder.setView(input);
+
+        builder.setPositiveButton("Submit", (dialog, which) ->{
+            String feedbackText = input.getText().toString().trim();
+
+            if (feedbackText.isEmpty()){
+                Toast.makeText(requireContext(), "Feedback cannot be empty", Toast.LENGTH_SHORT).show();
+            } else{
+                saveFeedbackToFirestore(feedbackText);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+    private void saveFeedbackToFirestore(String feedbackText){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if(currentUser == null){
+            Toast.makeText(requireContext(), "You must be logged in to submit feedback", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> feedback = new HashMap<>();
+        feedback.put("feedback", feedbackText);
+        feedback.put("timestamp", FieldValue.serverTimestamp());
+        feedback.put("userId", currentUser.getUid());
+        feedback.put("email", currentUser.getEmail());
+
+        db.collection("Feedback")
+                .add(feedback)
+                .addOnSuccessListener(documentReference ->
+                        Toast.makeText(requireContext(), "Feedback submitted successfully", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(requireContext(), "Failed to submit feedback: " + e.getMessage(), Toast.LENGTH_SHORT).show());
 
     }
 

@@ -20,5 +20,5 @@ public interface ImageDao {
     LiveData<List<String>> getImageUrisForUser(String userId);
 
     @Query("DELETE FROM images WHERE image_uri = :uri")
-    void deleteImageByUri(String uri);
+    int deleteImageByUri(String uri);
 }
