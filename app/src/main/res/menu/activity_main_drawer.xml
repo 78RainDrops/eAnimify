@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:andorid="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
@@ -16,6 +17,14 @@
             android:id="@+id/nav_animal_library"
             android:icon="@drawable/ic_lib"
             android:title="@string/menu_slideshow" />
+        <item
+            android:id="@+id/change_pass"
+            android:icon="@drawable/ic_password_"
+            android:title="@string/change_pass"/>
+        <item
+            android:id="@+id/deleteAcc"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/delete_acc"/>
 
     </group>
 </menu>

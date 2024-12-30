@@ -29,10 +29,10 @@ public class TFLiteModelHelper {
     }
 
     private MappedByteBuffer loadModelFile(Context context) throws IOException {
-        try (FileInputStream inputStream = new FileInputStream(context.getAssets().openFd("animal_model.tflite").getFileDescriptor())) {
+        try (FileInputStream inputStream = new FileInputStream(context.getAssets().openFd("animal_modelv2.tflite").getFileDescriptor())) {
             FileChannel fileChannel = inputStream.getChannel();
-            long startOffset = context.getAssets().openFd("animal_model.tflite").getStartOffset();
-            long declaredLength = context.getAssets().openFd("animal_model.tflite").getDeclaredLength();
+            long startOffset = context.getAssets().openFd("animal_modelv2.tflite").getStartOffset();
+            long declaredLength = context.getAssets().openFd("animal_modelv2.tflite").getDeclaredLength();
             return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
         }
     }

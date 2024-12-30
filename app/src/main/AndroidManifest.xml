@@ -27,9 +27,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EAnimify">
         <activity
-            android:name=".termsOfService.TermsOfServiceActivity"
+            android:name=".Account.ChangePasswordActivity"
             android:exported="false" />
-        <!-- Splash Activity as Launcher -->
+        <activity
+            android:name=".termsOfService.TermsOfServiceActivity"
+            android:exported="false" /> <!-- Splash Activity as Launcher -->
         <!-- <activity -->
         <!-- android:name=".SplashActivity" -->
         <!-- android:theme="@style/Theme.EAnimify" -->

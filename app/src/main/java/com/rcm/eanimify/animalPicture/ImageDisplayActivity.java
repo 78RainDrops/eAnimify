@@ -41,7 +41,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     private TFLiteModelHelper tfliteModelHelper;
     private Button searchButton;
     private Uri imageUri;
-
+    private static final double SIMILARITY_THRESHOLD = 0.8;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +57,30 @@ public class ImageDisplayActivity extends AppCompatActivity {
         Button discardButton = findViewById(R.id.discardButton);
         searchButton = findViewById(R.id.searchButton);
 
+//        if (getIntent().hasExtra("imageUri")) {
+//            String imageUriString = getIntent().getStringExtra("imageUri");
+//            imageUri = Uri.parse(imageUriString);
+//
+//            Glide.with(this)
+//                    .load(imageUri)
+//                    .into(imageView);
+//
+//            saveButton.setOnClickListener(v -> saveCapturedImage(imageUriString));
+//            searchButton.setOnClickListener(v -> searchForAnimal());
+//            discardButton.setOnClickListener(v -> finish());
+//        } else {
+//            Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+//            finish();
+//        }edit
         if (getIntent().hasExtra("imageUri")) {
             String imageUriString = getIntent().getStringExtra("imageUri");
             imageUri = Uri.parse(imageUriString);
 
+            // Remove "file:" prefix if it exists
+            String imagePath = imageUriString.startsWith("file:") ? imageUriString.substring(5) : imageUriString;
+
             Glide.with(this)
-                    .load(imageUri)
+                    .load(imagePath)
                     .into(imageView);
 
             saveButton.setOnClickListener(v -> saveCapturedImage(imageUriString));
@@ -72,6 +90,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
             finish();
         }
+
 
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -116,14 +135,14 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private void findClosestMatch(float[] featureVector) {
-        database.collection("Animal_ImagesV3")
+        database.collection("Animal_ImagesV4")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     double maxSimilarity = 0.0;
                     String bestMatchAnimalId = null;
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        List<Double> dbFeatureVector = (List<Double>) document.get("average_feature_vector");
+                        List<Double> dbFeatureVector = (List<Double>) document.get("feature_vector");
 
                         if (dbFeatureVector != null && dbFeatureVector.size() == featureVector.length) {
                             double similarity = calculateCosineSimilarity(featureVector, dbFeatureVector);
@@ -134,12 +153,15 @@ public class ImageDisplayActivity extends AppCompatActivity {
                                 maxSimilarity = similarity;
                                 bestMatchAnimalId = document.getString("animal_name");
                             }
-                        } else {
-                            Log.w("ImageDisplayActivity", "Feature vector size mismatch or null for " + document.getString("animal_name"));
                         }
+                        if (dbFeatureVector == null || dbFeatureVector.size() != featureVector.length) {
+                            Log.w("ImageDisplayActivity", "Invalid feature vector for animal: " + document.getString("animal_name"));
+                            continue; // Skip this entry
+                        }
+
                     }
 
-                    if (maxSimilarity > 0.7) {
+                    if (maxSimilarity > SIMILARITY_THRESHOLD) {
                         if (bestMatchAnimalId != null) {
                             Intent intent = new Intent(ImageDisplayActivity.this, AnimalDetailsActivity.class);
                             intent.putExtra("animal_name", bestMatchAnimalId);
@@ -149,7 +171,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                             Toast.makeText(this, "No matching animal found", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(this, "No animal match found with sufficient confidence", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No match found. Try capturing a clearer image or ensure the animal is in focus.", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(e -> Log.e("ImageDisplayActivity", "Error finding closest match", e));
@@ -165,7 +187,13 @@ public class ImageDisplayActivity extends AppCompatActivity {
             normVec1 += vec1[i] * vec1[i];
             normVec2 += vec2.get(i) * vec2.get(i);
         }
-        return dotProduct / (Math.sqrt(normVec1) * Math.sqrt(normVec2));
+//        return dotProduct / (Math.sqrt(normVec1) * Math.sqrt(normVec2));
+        double denominator = Math.sqrt(normVec1) * Math.sqrt(normVec2);
+        if (denominator == 0) {
+            return 0; // Avoid division by zero
+        }
+        return dotProduct / denominator;
+
     }
 
     private void saveImage(ImageEntity imageEntity) {
@@ -176,6 +204,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 Toast.makeText(this, "Image saved to database", Toast.LENGTH_SHORT).show();
                 finish();
             });
+            executor.shutdown(); // Shutdown the executor
         });
     }
 

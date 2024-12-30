@@ -97,6 +97,12 @@
     <string name="splash_logo_description">Splash logo</string>
     <string name="home_message">This Application named eAnimify. The main purpose is to give people a way to know endemic animals in the Philippines, and a way to identify and give info about them.
     Because of limited resources and time, the amount of endemic animal in this app is 104.</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="change_pass">Change Password</string>
+    <string name="delete_acc">Delete Account</string>
+    <string name="ChangePassword">Change Password</string>
+    <string name="password_does_not_match">Password does not match</string>
 
 
 </resources>

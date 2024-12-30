@@ -181,7 +181,7 @@ public class AnimalDetailsActivity extends AppCompatActivity {
     private void fetchImage(String animalName, String scientificName, String description, String endangerLevel, String familyName, String province, String taxonomicGroup) {
         progressBar.setVisibility(View.VISIBLE); // Show progress bar before starting the fetch
 
-        db.collection("Animal_ImagesV3")
+        db.collection("Animal_ImagesV4")
                 .whereEqualTo("animal_name", animalName)
                 .get()
                 .addOnSuccessListener(imageQueryDocumentSnapshots -> {

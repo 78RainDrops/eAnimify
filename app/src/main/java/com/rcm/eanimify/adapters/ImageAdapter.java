@@ -41,59 +41,116 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     }
 
 
-    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        ImageEntity image = images.get(position);
-//        Uri fileUri = Uri.fromFile(new File(image.imageUri)); // Convert to file:// URI
-        String imagePath = image.imageUri;
-//        Glide.with(context)
-//                .load(fileUri)
-//                .into(holder.imageView);
-        Uri fileUri = Uri.parse(imagePath);
-        File imageFile = new File(Objects.requireNonNull(fileUri.getPath()));
+//    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+//        ImageEntity image = images.get(position);
+////        Uri fileUri = Uri.fromFile(new File(image.imageUri)); // Convert to file:// URI
+//        String imagePath = image.imageUri;
+////        Glide.with(context)
+////                .load(fileUri)
+////                .into(holder.imageView);
+//        Uri fileUri = Uri.parse(imagePath);
+//        File imageFile = new File(Objects.requireNonNull(fileUri.getPath()));
+//
+//        if (imageFile.exists()) {
+//            // Load the image using Glide if the file exists
+//            Glide.with(context)
+//                    .load(fileUri) // Use the URI directly
+//                    .into(holder.imageView);
+//        } else {
+//            // Handle the case where the file doesn't exist
+//            Glide.with(context)
+//                    .load(R.drawable.placeholder_image) // Replace with your placeholder drawable
+//                    .into(holder.imageView);
+//        }
+//
+//
+//        holder.checkBox.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
+//        holder.checkBox.setChecked(selectedImages.contains(images.get(position)));
+//
+//        holder.itemView.setOnClickListener(v -> {
+//            if (isSelectionMode) {
+//                // Toggle checkbox state in selection mode
+//                holder.checkBox.setChecked(!holder.checkBox.isChecked());
+//                if (holder.checkBox.isChecked()) {
+//                    selectedImages.add(images.get(position));
+//                } else {
+//                    selectedImages.remove(images.get(position));
+//                }
+//            } else {
+//                // Open ImageDisplayActivity in normal mode
+//                Intent intent = new Intent(context, ImageDisplayActivity.class);
+//                intent.putExtra("imageUri", Uri.fromFile(new File(images.get(position).imageUri)).toString());
+//                context.startActivity(intent);
+//            }
+//        });
+//        holder.itemView.setOnLongClickListener(v -> {
+//            if (!isSelectionMode) {
+//                isSelectionMode = true;
+//                holder.checkBox.setChecked(true);
+//                selectedImages.add(images.get(position));
+//                notifyDataSetChanged(); // Update all items to show checkboxes
+//            }
+//            return true; // Consume the long press event
+//        });
+//
+//    }edit
+@Override
+public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+    ImageEntity image = images.get(position);
+    String imagePath = image.imageUri;
 
-        if (imageFile.exists()) {
-            // Load the image using Glide if the file exists
-            Glide.with(context)
-                    .load(fileUri) // Use the URI directly
-                    .into(holder.imageView);
-        } else {
-            // Handle the case where the file doesn't exist
-            Glide.with(context)
-                    .load(R.drawable.placeholder_image) // Replace with your placeholder drawable
-                    .into(holder.imageView);
-        }
-
-
-        holder.checkBox.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
-        holder.checkBox.setChecked(selectedImages.contains(images.get(position)));
-
-        holder.itemView.setOnClickListener(v -> {
-            if (isSelectionMode) {
-                // Toggle checkbox state in selection mode
-                holder.checkBox.setChecked(!holder.checkBox.isChecked());
-                if (holder.checkBox.isChecked()) {
-                    selectedImages.add(images.get(position));
-                } else {
-                    selectedImages.remove(images.get(position));
-                }
-            } else {
-                // Open ImageDisplayActivity in normal mode
-                Intent intent = new Intent(context, ImageDisplayActivity.class);
-                intent.putExtra("imageUri", Uri.fromFile(new File(images.get(position).imageUri)).toString());
-                context.startActivity(intent);
-            }
-        });
-        holder.itemView.setOnLongClickListener(v -> {
-            if (!isSelectionMode) {
-                isSelectionMode = true;
-                holder.checkBox.setChecked(true);
-                selectedImages.add(images.get(position));
-                notifyDataSetChanged(); // Update all items to show checkboxes
-            }
-            return true; // Consume the long press event
-        });
-
+    // Load the image using Glide
+    Uri fileUri = Uri.parse(imagePath);
+    File imageFile = new File(Objects.requireNonNull(fileUri.getPath()));
+    if (imageFile.exists()) {
+        Glide.with(context)
+                .load(fileUri) // Load the file URI directly
+                .into(holder.imageView);
+    } else {
+        Glide.with(context)
+                .load(R.drawable.placeholder_image) // Placeholder image if the file doesn't exist
+                .into(holder.imageView);
     }
+
+    // Configure checkbox visibility based on selection mode
+    holder.checkBox.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
+
+    // Set checkbox state based on selected images
+    holder.checkBox.setChecked(selectedImages.contains(image));
+
+    // Handle item click
+    holder.itemView.setOnClickListener(v -> {
+        if (isSelectionMode) {
+            // Toggle selection mode state
+            boolean isChecked = !holder.checkBox.isChecked();
+            holder.checkBox.setChecked(isChecked);
+
+            if (isChecked) {
+                selectedImages.add(image);
+            } else {
+                selectedImages.remove(image);
+            }
+        } else {
+            // Open ImageDisplayActivity with additional data
+            Intent intent = new Intent(context, ImageDisplayActivity.class);
+            intent.putExtra("imageUri", fileUri.toString());
+//            intent.putExtra("imageId", image.getId()); // Pass the image ID
+//            intent.putExtra("imageName", image.getName()); // Pass the image name
+            context.startActivity(intent);
+        }
+    });
+
+    // Handle item long press to enable selection mode
+    holder.itemView.setOnLongClickListener(v -> {
+        if (!isSelectionMode) {
+            isSelectionMode = true;
+            holder.checkBox.setChecked(true);
+            selectedImages.add(image);
+            notifyDataSetChanged(); // Update all items to show checkboxes
+        }
+        return true; // Consume the long press event
+    });
+}
 
     @Override
     public int getItemCount() {

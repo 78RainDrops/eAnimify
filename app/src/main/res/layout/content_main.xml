@@ -27,45 +27,7 @@
             layout="@layout/menu_buttons"
             app:layout_constraintTop_toTopOf="parent"
             />
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/btn_home"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/menu_home"-->
-<!--            android:textColor="@color/white"-->
-<!--            app:backgroundTint="@drawable/button_bg_color"-->
-<!--            app:cornerRadius="15dp" />-->
-<!--        <View-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_weight="1" />-->
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/nav_gallery"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/menu_gallery"-->
-<!--            android:textColor="@color/white"-->
-<!--            app:backgroundTint="@drawable/button_bg_color"-->
-<!--            app:cornerRadius="15dp" />-->
-<!--        <View-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_weight="1" />-->
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/btn_animal_library"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/menu_library"-->
-<!--            android:textColor="@color/white"-->
-<!--            app:backgroundTint="@drawable/button_bg_color"-->
-<!--            app:cornerRadius="15dp"/>-->
-<!--        <View-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_weight="1" />-->
+
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView

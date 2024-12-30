@@ -480,16 +480,22 @@ public class LoginActivity extends AppCompatActivity {
         TextView feedbackText = findViewById(R.id.strong_password);
         if (password.length() < 8) {
             feedbackText.setText(R.string.password_is_too_short);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         } else if (!password.matches(".*[A-Z].*")) {
             feedbackText.setText(R.string.password_must_contain_at_least_one_uppercase_letter);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         } else if (!password.matches(".*[a-z].*")) {
             feedbackText.setText(R.string.password_must_contain_at_least_one_lowercase_letter);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         } else if (!password.matches(".*\\d.*")) {
             feedbackText.setText(R.string.password_must_contain_at_least_one_digit);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         } else if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
             feedbackText.setText(R.string.password_must_contain_at_least_one_special_symbol);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         } else {
             feedbackText.setText(R.string.strong_password);
+            feedbackText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
         }
     }
 
